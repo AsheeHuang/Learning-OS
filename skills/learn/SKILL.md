@@ -11,7 +11,7 @@ Create or resume the top-level workspace for one learning topic. This skill char
 
 ## Source of truth
 
-Read [`../../docs/learning-protocol.md`](../../docs/learning-protocol.md) before writing files. Its workspace paths, file formats, status vocabulary, link rules, and invariants are authoritative. This skill defines the `/learn` sequence only.
+Read the bundled [Learning OS protocol](references/learning-protocol.md) before writing files. Its workspace paths, file formats, status vocabulary, link rules, and invariants are authoritative. This skill defines the `/learn` sequence only.
 
 ## 1. Resolve the topic
 
@@ -63,24 +63,39 @@ For a fresh workspace, ask one compact set of questions. Reuse answers already s
 5. What constraints should shape the learning plan?
 6. What is out of scope?
 
-Wait for the learner's answer before generating the map. If they have no constraints or exclusions, record `None stated` rather than repeatedly asking.
+Wait for the learner's answer before researching sources or generating the map. If they have no constraints or exclusions, record `None stated` rather than repeatedly asking.
 
 Write `MISSION.md` using the protocol format. Keep it concise and preserve the learner's intent rather than inflating it into a course description.
 
-## 4. Chart a breadth-first map
+## 4. Ground the map in trusted sources
 
-Generate `MAP.md` from the mission.
+Create `RESOURCES.md` with `Knowledge` and `Further Reading` headings before generating `MAP.md`.
 
-- Cover the major areas needed to reach the target outcome.
+When research or web tools are available, curate two to four high-trust sources:
+
+- Prefer primary sources, maintained official documentation, and respected foundational material.
+- Give each source a short trust/usefulness explanation and a `Use for:` scope.
+- Put sources that should ground the map and later explanations under `Knowledge`; put optional depth under `Further Reading`.
+- Use the selected sources to check the map's terminology, major areas, and scope.
+
+When research is unavailable or fails, leave the headings empty and continue. Never invent a citation or let resource gathering block map creation.
+
+## 5. Chart a bounded breadth-first map
+
+Generate `MAP.md` from the mission and the curated resources when available.
+
+- Use exactly two tracked levels: meaningful area headings and independently learnable concept links.
+- Aim for 10–20 total concepts, with a hard maximum of 25; a legitimately narrow topic may use fewer than 10.
+- If the mission needs more than 25 concepts, ask whether to split it into multiple learning topics instead of dumping a full curriculum.
 - Prefer breadth over depth: show the shape of the subject without expanding every branch.
-- Use a small set of meaningful area headings with a navigable set of concepts under each.
 - Use topic-workspace-relative Wiki links with aliases, such as `[[lessons/processes.md|Processes]]`.
 - Links may target lesson files that do not exist yet.
 - Include only concepts relevant to the mission and keep declared out-of-scope material out.
+- Do not add dependency edges or separately tracked subtopics in Phase 1.
 
 Do not create lesson or note files while charting. A successful map lets the learner choose where to begin; it is not a pre-generated course.
 
-## 5. Initialize current state
+## 6. Initialize current state
 
 Create `PROGRESS.md` using the protocol table.
 
@@ -91,18 +106,6 @@ Create `PROGRESS.md` using the protocol table.
 - Set `Last Learned` and `Last Tested` to `—`.
 
 Before continuing, compare `MAP.md` and `PROGRESS.md`: every map concept must have one progress row, and no row may be duplicated.
-
-## 6. Initialize sources
-
-Create `RESOURCES.md` with `Knowledge` and `Further Reading` headings.
-
-When research or web tools are available, curate two to four high-trust sources:
-
-- Prefer primary sources, maintained official documentation, and respected foundational material.
-- Give each source a short trust/usefulness explanation and a `Use for:` scope.
-- Put sources that should ground explanations under `Knowledge`; put optional depth under `Further Reading`.
-
-When research is unavailable or fails, leave the headings empty and continue. Never invent a citation or let resource gathering block map creation.
 
 ## 7. Finish the workspace
 
@@ -124,7 +127,13 @@ Present the high-level map in the response. Briefly state:
 - whether trusted resources were curated or left empty;
 - that map links are choices, not generated lessons.
 
-End by asking which map concept the learner wants to study first. Do not invoke `/explain` or create a lesson in the same run.
+Then list the possible next steps:
+
+- create one or more main-path lessons from selected map concepts;
+- explore an unfamiliar term or side concept without interrupting the main path;
+- view current learning progress and topics waiting for validation or review.
+
+End by asking which map concept the learner wants to study first. Do not invoke another skill or create a lesson or note in the same run.
 
 ## Completion check
 
@@ -137,4 +146,4 @@ Finish only when all conditions hold:
 - `HISTORY.md` contains no rewritten prior events.
 - `RESOURCES.md` contains verified sources or honest empty headings.
 - `lessons/` and `notes/` contain no files created by `/learn`.
-- The learner has been shown the map and asked where to begin.
+- The learner has been shown the map, given the possible next steps, and asked where to begin.

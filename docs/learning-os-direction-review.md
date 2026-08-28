@@ -599,14 +599,14 @@ examples/operating-systems/
 
 能夠：
 
-1. 問 mission 問題
-2. 建立 topic workspace
+1. 建立或找到 topic workspace
+2. 問 mission 問題
 3. 建立 `MISSION.md`
-4. 建立高層次 `MAP.md`
-5. 建立初始 `PROGRESS.md`
-6. 建立 `HISTORY.md`
-7. 建立 `RESOURCES.md`
-8. 顯示 map
+4. 建立 `RESOURCES.md`；有 research 能力時先整理可信來源
+5. 根據 mission 和 resources 建立 bounded、breadth-first 的 `MAP.md`
+6. 建立初始 `PROGRESS.md`
+7. 建立 `HISTORY.md`
+8. 驗證 workspace 一致性並顯示 map
 9. 問使用者選哪個 topic
 
 Acceptance criteria：

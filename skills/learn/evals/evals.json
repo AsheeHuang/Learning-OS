@@ -4,28 +4,19 @@
     {
       "id": 1,
       "prompt": "In this empty Obsidian vault, run /learn Operating Systems. I am a backend engineer who knows application development but not OS internals. I want to understand processes, concurrency, virtual memory, and file systems well enough to diagnose production behavior and read systems documentation. I have 30 minutes per session, prefer concrete examples, and kernel development is out of scope.",
-      "expected_output": "Creates Learn/Operating Systems with the complete protocol workspace, a mission-grounded breadth-first map, one Unexplored progress row per map concept, initialized history and resources, empty lessons/notes/assessments directories, then presents the map and asks where to begin.",
+      "expected_output": "Creates Learn/Operating Systems with the complete protocol workspace, curates trusted resources before generating a bounded mission-grounded map, creates one Unexplored progress row per map concept, initializes history and empty artifact directories, then presents the map and asks where to begin.",
       "files": [],
       "assertions": [
         "The five required Markdown state files and three artifact directories exist under Learn/Operating Systems.",
-        "MAP.md is breadth-first, mission-relevant, and contains only path-qualified lesson links rather than generated lesson content.",
+        "RESOURCES.md is created before MAP.md; verified sources are used when research is available, while honest empty headings are accepted when it is not.",
+        "MAP.md has exactly two tracked levels, stays within the 25-concept maximum, is mission-relevant, and contains only path-qualified lesson links rather than generated lesson content.",
         "Every unique MAP.md concept has exactly one PROGRESS.md row with status Unexplored and blank learning/testing dates.",
         "MISSION.md preserves the supplied level, outcomes, success criteria, constraints, and out-of-scope boundary.",
-        "No lesson or note file is generated, and the final response asks which mapped concept to study first."
+        "No lesson or note file is generated, and the final response lists the possible next actions without coupling them to provisional skill names before asking which mapped concept to study first."
       ]
     },
     {
       "id": 2,
-      "prompt": "Run /learn Distributed Systems in this vault. I have not said why I want to learn it or what level I am at.",
-      "expected_output": "Asks the compact mission questions and waits. It does not invent the mission, generate a map, or create lessons before the learner answers.",
-      "files": [],
-      "assertions": [
-        "The response asks only for mission information missing from the prompt.",
-        "No MAP.md, PROGRESS.md, lesson, or note is generated before the learner supplies the mission."
-      ]
-    },
-    {
-      "id": 3,
       "prompt": "Resume /learn Databases. The existing Learn/Databases workspace has MISSION.md, MAP.md, and a PROGRESS.md where Transactions is Needs Validation, but setup was interrupted before HISTORY.md, RESOURCES.md, and the directories were created.",
       "expected_output": "Reads and preserves existing files and the Needs Validation status, creates only the missing protocol artifacts, reconciles only missing map rows as Unexplored, presents the existing map, and asks what to study next without regenerating lessons.",
       "files": [],
@@ -34,7 +25,7 @@
         "The existing Transactions row remains Needs Validation with its original date.",
         "Only missing MAP concepts are added to PROGRESS.md and each is initialized as Unexplored.",
         "Missing HISTORY.md, RESOURCES.md, lessons, notes, and assessments artifacts are initialized without generating lesson or note content.",
-        "The final response presents the existing map and asks what to study next."
+        "The final response presents the existing map, lists the possible next actions without coupling them to provisional skill names, and asks what to study next."
       ]
     }
   ]
