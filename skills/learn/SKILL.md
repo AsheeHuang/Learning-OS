@@ -78,7 +78,7 @@ When research or web tools are available, curate two to four high-trust sources:
 - Put sources that should ground the map and later explanations under `Knowledge`; put optional depth under `Further Reading`.
 - Use the selected sources to check the map's terminology, major areas, and scope.
 
-When research is unavailable or fails, leave the headings empty and continue. Never invent a citation or let resource gathering block map creation.
+A source counts as verified only if you fetched or read it during this run, or it was already supplied by the learner or persisted in the workspace. Parametric memory does not verify a source. When research is unavailable or fails, leave both headings empty; do not add remembered source titles or URLs. Continue to the map without letting resource gathering block setup.
 
 ## 5. Chart a bounded breadth-first map
 

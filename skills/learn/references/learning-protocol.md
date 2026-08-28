@@ -187,7 +187,7 @@ Follow the core shape of Matt Pocock's Teach `RESOURCES-FORMAT.md`:
 
 `Knowledge` contains sources that should ground explanations. `Further Reading` contains optional depth. Important claims in lessons and notes should use inline citations.
 
-After `MISSION.md` is written and before `MAP.md` is generated, `/learn` creates `RESOURCES.md`. When research tools are available, it curates two to four trusted sources and uses them to ground the map's terminology and coverage. Without research tools, or when research fails, it creates the headings and leaves them empty before continuing to the map. Empty resources do not block map creation. Before producing an explanation from unverified model knowledge, the agent asks for a source, researches one, or labels the content as unverified.
+After `MISSION.md` is written and before `MAP.md` is generated, `/learn` creates `RESOURCES.md`. When research tools are available, it curates two to four trusted sources and uses them to ground the map's terminology and coverage. A source counts as verified only when the agent fetched or read it during the current run, or when it was already supplied by the learner or persisted in the workspace. Parametric model knowledge does not verify a source. Without research tools, or when research fails, `/learn` leaves both resource sections empty before continuing to the map; it must not populate remembered titles or URLs. Empty resources do not block map creation. Before producing an explanation from unverified model knowledge, the agent asks for a source, researches one, or labels the content as unverified.
 
 ### Lesson
 

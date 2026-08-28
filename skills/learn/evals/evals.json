@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "In this empty Obsidian vault, run /learn Operating Systems. I am a backend engineer who knows application development but not OS internals. I want to understand processes, concurrency, virtual memory, and file systems well enough to diagnose production behavior and read systems documentation. I have 30 minutes per session, prefer concrete examples, and kernel development is out of scope.",
+      "prompt": "/skill:learn Operating Systems\n\nI am a backend engineer who knows application development but not OS internals. I want to understand processes, concurrency, virtual memory, and file systems well enough to diagnose production behavior and read systems documentation. Success means applying the concepts to unfamiliar production scenarios. I have 30 minutes per session, prefer concrete examples, and kernel development is out of scope.",
       "expected_output": "Creates Learn/Operating Systems with the complete protocol workspace, curates trusted resources before generating a bounded mission-grounded map, creates one Unexplored progress row per map concept, initializes history and empty artifact directories, then presents the map and asks where to begin.",
       "files": [],
       "assertions": [
@@ -17,7 +17,7 @@
     },
     {
       "id": 2,
-      "prompt": "Resume /learn Databases. The existing Learn/Databases workspace has MISSION.md, MAP.md, and a PROGRESS.md where Transactions is Needs Validation, but setup was interrupted before HISTORY.md, RESOURCES.md, and the directories were created.",
+      "prompt": "/skill:learn Databases\n\nResume the existing learning workspace. Its setup may have been interrupted; preserve all existing human-authored content and learning state.",
       "expected_output": "Reads and preserves existing files and the Needs Validation status, creates only the missing protocol artifacts, reconciles only missing map rows as Unexplored, presents the existing map, and asks what to study next without regenerating lessons.",
       "files": [],
       "assertions": [
@@ -26,6 +26,16 @@
         "Only missing MAP concepts are added to PROGRESS.md and each is initialized as Unexplored.",
         "Missing HISTORY.md, RESOURCES.md, lessons, notes, and assessments artifacts are initialized without generating lesson or note content.",
         "The final response presents the existing map, lists the possible next actions without coupling them to provisional skill names, and asks what to study next."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/skill:learn Distributed Systems",
+      "expected_output": "Asks for the missing mission information and waits without creating Learn/ or any learning artifacts.",
+      "files": [],
+      "assertions": [
+        "The response asks for the learner's purpose, current level, target outcome, success criteria, constraints, and out-of-scope boundary.",
+        "No learning workspace or artifact is written before the learner answers."
       ]
     }
   ]
