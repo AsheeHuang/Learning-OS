@@ -9,7 +9,7 @@ vault_prefix="learning-os"
 vault_path=""
 
 usage() {
-  printf 'Usage: %s --new-env [--agent=<pi|cc|codex>] | --sync-resources [--check] | --clean-env\n\n' "${0##*/}"
+  printf 'Usage: %s --new-env [--agent=<pi|cc|codex>] | --sync-resources [--check] | --sync-skills [--vault=<path>] [--link] | --clean-env\n\n' "${0##*/}"
   cat <<'EOF'
 Development helpers for Learning OS skills.
 
@@ -19,6 +19,13 @@ Development helpers for Learning OS skills.
                         install only that host's skill directory (pi/codex:
                         .agents/skills, cc: .claude/skills). Requires
                         --new-env.
+  --sync-skills         Refresh an existing dev vault with the current
+                        skills/ tree after editing a skill.
+  --vault=<path>        Target vault for --sync-skills. Defaults to the
+                        newest vault under ${TMPDIR:-/tmp}/learning-os-*.
+  --link                With --sync-skills, replace the vault's copied
+                        skills with symlinks to skills/ so edits are live;
+                        repeat without --link to go back to copies.
   --sync-resources      Copy docs/learning-protocol.md into every skill's
                         references/learning-protocol.md.
   --sync-resources --check
@@ -39,6 +46,7 @@ create_env() {
   esac
 
   vault_path="$(mktemp -d "${TMPDIR:-/tmp}/${vault_prefix}-XXXXXX")"
+  printf 'learning-os dev vault\n' > "$vault_path/.learning-os-dev"
   for dir in "${dirs[@]}"; do
     mkdir -p "$vault_path/$dir"
   done
@@ -102,6 +110,79 @@ clean_env() {
   fi
 }
 
+resolve_vault() {
+  local base="${TMPDIR:-/tmp}"
+  local newest="" dir
+
+  if [[ -n "$vault" ]]; then
+    return 0
+  fi
+
+  for dir in "$base"/${vault_prefix}-*; do
+    [[ -d "$dir" ]] || continue
+    if [[ -z "$newest" || "$dir" -nt "$newest" ]]; then
+      newest="$dir"
+    fi
+  done
+
+  if [[ -z "$newest" ]]; then
+    printf 'No dev vault found under %s. Run %s --new-env first.\n' \
+      "$base" "${0##*/}" >&2
+    exit 1
+  fi
+  vault="$newest"
+}
+
+sync_skills() {
+  local host_dir name source
+  local -a skills=() dirs=()
+
+  resolve_vault
+
+  if [[ ! -d "$vault" ]]; then
+    printf 'Vault not found: %s\n' "$vault" >&2
+    exit 1
+  fi
+
+  # Only operate on vaults this script owns: the /tmp/learning-os-* namespace
+  # or a vault carrying the dev marker written by --new-env.
+  if [[ "$vault" != "${TMPDIR:-/tmp}"/${vault_prefix}-* && \
+        ! -f "$vault/.learning-os-dev" ]]; then
+    printf 'Not a Learning OS dev vault (missing marker): %s\n' "$vault" >&2
+    exit 1
+  fi
+
+  [[ -d "$vault/.claude/skills" ]] && dirs+=("$vault/.claude/skills")
+  [[ -d "$vault/.agents/skills" ]] && dirs+=("$vault/.agents/skills")
+  if (( ${#dirs[@]} == 0 )); then
+    printf 'Vault has no skill directories: %s\n' "$vault" >&2
+    exit 1
+  fi
+
+  shopt -s nullglob
+  for manifest in "$skills_root"/*/SKILL.md; do
+    skills+=("$(basename "$(dirname "$manifest")")")
+  done
+  shopt -u nullglob
+
+  for host_dir in "${dirs[@]}"; do
+    rm -rf "$host_dir"
+    mkdir -p "$host_dir"
+    for name in "${skills[@]}"; do
+      source="$skills_root/$name"
+      if [[ "$link" == true ]]; then
+        ln -s "$source" "$host_dir/$name"
+        printf 'Linked: %s -> %s\n' "$host_dir/$name" "$source"
+      else
+        cp -r "$source" "$host_dir/$name"
+        printf 'Copied: %s -> %s\n' "$host_dir/$name" "$source"
+      fi
+    done
+  done
+
+  printf '\nSkills synced into %s.\n' "$vault"
+}
+
 sync_resources() {
   local manifest destination skill_dir stale=0
   local -a manifests=()
@@ -149,7 +230,9 @@ sync_resources() {
 
 mode=""
 check=false
+link=false
 agent=""
+vault=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -163,10 +246,35 @@ while [[ $# -gt 0 ]]; do
       ;;
     --sync-resources)
       if [[ -n "$mode" && "$mode" != "sync" ]]; then
-        printf '%s: --new-env, --sync-resources, and --clean-env are mutually exclusive.\n' "${0##*/}" >&2
+        printf '%s: --new-env, --sync-resources, --sync-skills, and --clean-env are mutually exclusive.\n' "${0##*/}" >&2
         exit 2
       fi
       mode="sync"
+      shift
+      ;;
+    --sync-skills)
+      if [[ -n "$mode" && "$mode" != "sync-skills" ]]; then
+        printf '%s: --new-env, --sync-resources, --sync-skills, and --clean-env are mutually exclusive.\n' "${0##*/}" >&2
+        exit 2
+      fi
+      mode="sync-skills"
+      shift
+      ;;
+    --link)
+      link=true
+      shift
+      ;;
+    --vault=*)
+      vault="${1#--vault=}"
+      shift
+      ;;
+    --vault)
+      shift
+      if [[ $# -eq 0 ]]; then
+        printf '%s: --vault requires a value.\n' "${0##*/}" >&2
+        exit 2
+      fi
+      vault="$1"
       shift
       ;;
     --clean-env)
@@ -211,6 +319,16 @@ if [[ "$check" == true && "$mode" != "sync" ]]; then
   exit 2
 fi
 
+if [[ "$link" == true && "$mode" != "sync-skills" ]]; then
+  printf '%s: --link requires --sync-skills.\n' "${0##*/}" >&2
+  exit 2
+fi
+
+if [[ -n "$vault" && "$mode" != "sync-skills" ]]; then
+  printf '%s: --vault requires --sync-skills.\n' "${0##*/}" >&2
+  exit 2
+fi
+
 if [[ -n "$agent" ]]; then
   if [[ "$mode" != "new-env" ]]; then
     printf '%s: --agent requires --new-env.\n' "${0##*/}" >&2
@@ -242,6 +360,9 @@ case "$mode" in
     ;;
   sync)
     sync_resources
+    ;;
+  sync-skills)
+    sync_skills
     ;;
   clean-env)
     clean_env
