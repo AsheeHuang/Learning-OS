@@ -1,11 +1,11 @@
 ---
-name: explain
+name: learn-lesson
 description: Teach one or more mapped Learning OS concepts by writing a short, source-grounded lesson that ends in three just-right self-check questions, then persist the lessons and learning state.
 disable-model-invocation: true
 argument-hint: "<concept>... (optional)"
 ---
 
-# Explain
+# Learn Lesson
 
 Teach one or more concepts that already exist on a Learning OS map. Teaching
 is artifact-based: the lesson itself teaches, and each lesson ends in three
@@ -17,14 +17,14 @@ is no live one-question-at-a-time conversation.
 Read the bundled [Learning OS protocol](references/learning-protocol.md) before
 touching a workspace. Its workspace paths, lesson format, status vocabulary,
 link rules, history format, and invariants are authoritative. This skill
-defines the `/explain` sequence on top of it.
+defines the `/learn-lesson` sequence on top of it.
 
 ## 1. Resolve one or more concepts
 
 The invocation takes one of two forms:
 
-- `/explain <Concept>...` — one or more named concepts.
-- `/explain` — no arguments. List the pending concepts (status `Unexplored`
+- `/learn-lesson <Concept>...` — one or more mapped lesson concepts.
+- `/learn-lesson` — no arguments. List the pending concepts (status `Unexplored`
   in `PROGRESS.md`) and ask the learner to confirm a subset or all of them.
   When nothing is pending, report that there is nothing to explain and stop.
 
@@ -74,7 +74,7 @@ Move a concept to `Learning` immediately before its lesson write begins, and
 set `Current Focus` to its path-qualified Wiki link. Preserve `Last Learned`,
 `Last Tested`, and every unrelated row exactly. A `Mastered` topic being
 revisited also moves to `Learning`; the completed revisit requires validation
-again — only `/quiz` can restore `Mastered`.
+again — only `/learn-quiz` can restore `Mastered`.
 
 Concepts whose write has not begun stay `Unexplored`, so an interrupted run
 resumes cleanly.
@@ -243,7 +243,7 @@ all earlier history.
 
 State the tangible win(s), where each lesson was saved, and that the topics
 are `Needs Validation`, not `Mastered`. Invite follow-up questions
-(learner-initiated) and mention that `/quiz` is the validation step. Do not
+(learner-initiated) and mention that `/learn-quiz` is the validation step. Do not
 start further lessons in the same run.
 
 ## Completion check

@@ -1,4 +1,4 @@
-# `/learn` behavioral evals
+# `/learn-init` behavioral evals
 
 These evals execute the real Skill through Pi in disposable vaults, then grade durable filesystem effects with deterministic assertions.
 
@@ -43,7 +43,7 @@ Results are written under `.eval-results/learn/<timestamp>/` and ignored by Git.
 - `partial-resume`: repairs an interrupted workspace while preserving human-authored state.
 - `missing-mission`: asks for missing mission information and writes nothing.
 
-Prompts and high-level expectations live in `skills/learn/evals/evals.json`. Resume input state lives under `fixtures/partial-resume/vault/`.
+Prompts and high-level expectations live in `skills/learn-init/evals/evals.json`. Resume input state lives under `fixtures/partial-resume/vault/`.
 
 ## Verification
 
@@ -55,7 +55,7 @@ Prompts and high-level expectations live in `skills/learn/evals/evals.json`. Res
 - path-qualified lesson links;
 - MAP/PROGRESS bijection and valid statuses;
 - fresh topics begin `Unexplored` with blank dates;
-- `/learn` creates no lesson or note files;
+- `/learn-init` creates no lesson or note files;
 - required resource headings and initialized history;
 - resume preserves mission, map, existing statuses, and dates.
 

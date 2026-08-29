@@ -72,8 +72,8 @@ create_env() {
 
   printf '\nDevelopment vault ready: %s\n' "$vault_path"
   if [[ -z "$agent" ]]; then
-    printf 'Claude Code: cd %q && claude       then run /learn <topic> or /explain <concept>\n' "$vault_path"
-    printf 'Codex:      cd %q && codex        then run $learn <topic> or $explain <concept>\n' "$vault_path"
+    printf 'Claude Code: cd %q && claude       then run /learn-init <topic> or /learn-lesson <concept>\n' "$vault_path"
+    printf 'Codex:      cd %q && codex        then run $learn-init <topic> or $learn-lesson <concept>\n' "$vault_path"
     printf 'Pi:         cd %q && pi --approve then run /skill:<name> <args>\n' "$vault_path"
   fi
 }

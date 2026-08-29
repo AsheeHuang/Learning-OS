@@ -3,8 +3,8 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-evals_file="$repo_root/skills/learn/evals/evals.json"
-skill_file="$repo_root/skills/learn/SKILL.md"
+evals_file="$repo_root/skills/learn-init/evals/evals.json"
+skill_file="$repo_root/skills/learn-init/SKILL.md"
 verifier="$repo_root/evals/learn/verify.py"
 fixtures_root="$repo_root/evals/learn/fixtures"
 pi_bin="${PI_BIN:-pi}"
@@ -119,13 +119,13 @@ PY
 }
 
 skill_revision="$(git -C "$repo_root" rev-parse --short HEAD 2>/dev/null || printf unknown)"
-if ! git -C "$repo_root" diff --quiet -- skills/learn docs/learning-protocol.md 2>/dev/null; then
+if ! git -C "$repo_root" diff --quiet -- skills/learn-init docs/learning-protocol.md 2>/dev/null; then
   skill_revision="$skill_revision-dirty"
 fi
 
 summary="$results_root/summary.md"
 {
-  printf '# Learn Skill Eval\n\n'
+  printf '# Learn Init Skill Eval\n\n'
   printf -- '- Skill: `%s`\n' "$skill_file"
   printf -- '- Skill revision: `%s`\n' "$skill_revision"
   printf -- '- Host: `pi`\n'

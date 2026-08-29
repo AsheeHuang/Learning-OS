@@ -13,7 +13,7 @@ Learn/
 └── <topic>/
 ```
 
-`/learn OS` resolves to `Learn/OS/`. `/learn Operating Systems` resolves to `Learn/Operating Systems/`.
+`/learn-init OS` resolves to `Learn/OS/`. `/learn-init Operating Systems` resolves to `Learn/Operating Systems/`.
 
 The Learning OS source repository contains the protocol and skills. It does not contain a learner's live workspace.
 
@@ -101,7 +101,7 @@ Organize the map into a few high-level areas and list concepts using Wiki links:
 
 Track exactly two map levels: area headings and independently learnable concept links. Aim for 10–20 concepts; 25 is the hard maximum. A legitimately narrow topic may use fewer than 10. If the mission needs more than 25 concepts, ask whether to split it into multiple learning topics instead of generating a full curriculum.
 
-A map link does not require its lesson to exist. `/learn` creates breadth, not a generated course. Detailed content is created only after the learner selects it. Phase 1 does not persist subtopic status or dependency edges.
+A map link does not require its lesson to exist. `/learn-init` creates breadth, not a generated course. Detailed content is created only after the learner selects it. Phase 1 does not persist subtopic status or dependency edges.
 
 Exploration notes stay out of the map unless the concept becomes a useful visible choice on the main learning path.
 
@@ -136,17 +136,17 @@ Do not duplicate status into separate `Needs Validation` or `Needs Review` lists
 #### State transitions
 
 ```text
-/learn adds a map topic                  → Unexplored
-/explain starts                          → Learning
-/explain completes                       → Needs Validation
-/explore creates an exploration note     → Learning
+/learn-init adds a map topic                  → Unexplored
+/learn-lesson starts                          → Learning
+/learn-lesson completes                       → Needs Validation
+/learn-note creates an exploration note     → Learning
 learner explicitly requests validation   → Needs Validation
-/quiz result: strong                     → Mastered
-/quiz result: partial or weak            → Needs Review
-/explain revisits a topic                 → Learning → Needs Validation
+/learn-quiz result: strong                     → Mastered
+/learn-quiz result: partial or weak            → Needs Review
+/learn-lesson revisits a topic                 → Learning → Needs Validation
 ```
 
-Only `/quiz` can produce `Mastered`. Topics not tested by a quiz keep their existing status.
+Only `/learn-quiz` can produce `Mastered`. Topics not tested by a quiz keep their existing status.
 
 ### `HISTORY.md`
 
@@ -187,7 +187,7 @@ Follow the core shape of Matt Pocock's Teach `RESOURCES-FORMAT.md`:
 
 `Knowledge` contains sources that should ground explanations. `Further Reading` contains optional depth. Important claims in lessons and notes should use inline citations.
 
-After `MISSION.md` is written and before `MAP.md` is generated, `/learn` creates `RESOURCES.md`. When research tools are available, it curates two to four trusted sources and uses them to ground the map's terminology and coverage. A source counts as verified only when the agent fetched or read it during the current run, or when it was already supplied by the learner or persisted in the workspace. Parametric model knowledge does not verify a source. Without research tools, or when research fails, `/learn` leaves both resource sections empty before continuing to the map; it must not populate remembered titles or URLs. Empty resources do not block map creation. Before producing an explanation from unverified model knowledge, the agent asks for a source, researches one, or labels the content as unverified.
+After `MISSION.md` is written and before `MAP.md` is generated, `/learn-init` creates `RESOURCES.md`. When research tools are available, it curates two to four trusted sources and uses them to ground the map's terminology and coverage. A source counts as verified only when the agent fetched or read it during the current run, or when it was already supplied by the learner or persisted in the workspace. Parametric model knowledge does not verify a source. Without research tools, or when research fails, `/learn-init` leaves both resource sections empty before continuing to the map; it must not populate remembered titles or URLs. Empty resources do not block map creation. Before producing an explanation from unverified model knowledge, the agent asks for a source, researches one, or labels the content as unverified.
 
 ### Lesson
 
@@ -279,7 +279,7 @@ Update `PROGRESS.md` only after the assessment has enough evidence for that topi
 
 ## 5. Skill contracts
 
-### `/learn <topic>`
+### `/learn-init <topic>`
 
 1. Resolve the workspace as `Learn/<topic>/` and classify it as new or existing.
 2. Ask for the mission: why, current level, target level, desired outcomes, success criteria, constraints, and out of scope.
@@ -293,7 +293,7 @@ Update `PROGRESS.md` only after the assessment has enough evidence for that topi
 
 Completion criterion: the workspace is internally consistent, no lesson has been generated, and the learner can choose a map concept.
 
-### `/explain <topic>`
+### `/learn-lesson <concept>...`
 
 1. Read `MISSION.md`, `PROGRESS.md`, `MAP.md`, relevant resources, and the target artifact if it exists.
 2. Set the target to `Learning` in `PROGRESS.md`.
@@ -304,7 +304,9 @@ Completion criterion: the workspace is internally consistent, no lesson has been
 
 Completion criterion: one lesson and its practice are complete, persisted state matches the session, and the topic is not marked `Mastered`.
 
-### `/explore <concept>`
+### `/learn-note <note-name>`
+
+The argument names the note to create. The command identifies or asks for the source lesson or concept before writing it.
 
 1. Identify or ask for the source lesson or concept.
 2. Read the source artifact, mission, progress, map, and relevant resources.
@@ -317,7 +319,7 @@ Completion criterion: one lesson and its practice are complete, persisted state 
 
 Completion criterion: the exploration is persisted and connected without changing the source lesson's learning status. Subagent and fallback execution produce the same file contract.
 
-### `/quiz [topics...]`
+### `/learn-quiz [topics...]`
 
 1. Read `PROGRESS.md` first.
 2. With explicit topics, select those topics. Without arguments, list all `Needs Validation` topics and let the learner confirm or exclude candidates.

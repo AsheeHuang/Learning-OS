@@ -1,4 +1,4 @@
-# `/explain` Skill Spec
+# `/learn-lesson` Skill Spec
 
 Status: ready-for-human
 Date: 2026-08-28
@@ -7,7 +7,7 @@ Owner: phase2 worktree, Learning OS
 ## Context
 
 Learning OS runs the loop Map → Learn → Explore → Validate on a plain-Markdown
-Obsidian workspace. `/learn` charts the map and initializes progress; `/explain`
+Obsidian workspace. `/learn-init` charts the map and initializes progress; `/learn-lesson`
 turns one or more mapped concepts into short, source-grounded lessons, then
 persists each lesson and its state change.
 
@@ -21,7 +21,7 @@ it.
 
 ## Decisions recorded
 
-- **Discard and rewrite.** The previous uncommitted `skills/explain/` draft is
+- **Discard and rewrite.** The previous uncommitted `skills/learn-lesson/` draft is
   thrown away; the skill is written fresh against this spec.
 - **Protocol untouched.** The teaching model, batch flow, self-check format,
   and subagent delegation live in the skill, not in
@@ -37,14 +37,14 @@ it.
 - **Answers included.** The three questions are followed by a clearly
   separated answers section at the very end of the lesson, so the learner can
   check after attempting.
-- **Batch support.** `/explain` accepts multiple concepts or a pending list;
+- **Batch support.** `/learn-lesson` accepts multiple concepts or a pending list;
   multiple lessons may be delegated to subagents in parallel.
 - **Subagents are an optimization, not a dependency.** When the host has
   subagents, multi-lesson runs delegate one lesson per subagent; without them,
   the main agent writes the same artifacts sequentially. The file contract is
   identical either way.
 - **Status timing.** A concept moves to `Needs Validation` as soon as its
-  lesson is verified written; the self-check and `/quiz` come later.
+  lesson is verified written; the self-check and `/learn-quiz` come later.
 - **Lesson presentation.** Lessons prefer diagrams and tables where the
   concept lends itself (Mermaid for standalone diagrams, ASCII for inline
   ones) and use Markdown comments, highlights, and quotes/callouts to express
@@ -55,7 +55,7 @@ it.
 > One or more mapped concepts, each turned into a single bounded lesson ending
 > in three just-right self-check questions, with the lesson persisted, the
 > topic moved `Learning → Needs Validation`, and history appended — ready for
-> `/quiz` to validate later.
+> `/learn-quiz` to validate later.
 
 ## Scope
 
@@ -77,9 +77,9 @@ In scope:
 Out of scope (this phase):
 
 - Live interactive teaching (one-question-at-a-time conversation).
-- Auto-exploration of side concepts (that is `/explore`).
+- Auto-exploration of side concepts (that is `/learn-note`).
 - Any change to `docs/learning-protocol.md`.
-- Assessment or mastery status (`/quiz` owns `Mastered`).
+- Assessment or mastery status (`/learn-quiz` owns `Mastered`).
 - Flashcards, review scheduling, or other post-MVP features.
 
 ## Behavior contract
@@ -88,8 +88,8 @@ Out of scope (this phase):
 
 Invocation takes one of two forms:
 
-- `/explain <Concept>...` — one or more named concepts.
-- `/explain` — no arguments; list the pending concepts (status `Unexplored`
+- `/learn-lesson <Concept>...` — one or more named concepts.
+- `/learn-lesson` — no arguments; list the pending concepts (status `Unexplored`
   from `PROGRESS.md`) and ask the learner to confirm a subset or all of them.
   When nothing is pending, report that there is nothing to explain and stop.
 
@@ -133,7 +133,7 @@ Move a concept to `Learning` immediately before its lesson write begins, and
 set `Current Focus` to its path-qualified Wiki link. Preserve `Last Learned`,
 `Last Tested`, and every unrelated row exactly. A `Mastered` topic being
 revisited also moves to `Learning`; the completed revisit requires validation
-again (only `/quiz` restores `Mastered`).
+again (only `/learn-quiz` restores `Mastered`).
 
 Concepts whose write has not begun stay `Unexplored`, so an interrupted batch
 resumes cleanly.
@@ -296,34 +296,34 @@ all earlier history.
 
 State the tangible win(s), where each lesson was saved, and that the topics
 are `Needs Validation`, not `Mastered`. Invite follow-up questions
-(learner-initiated) and mention that `/quiz` is the validation step. Do not
+(learner-initiated) and mention that `/learn-quiz` is the validation step. Do not
 start further lessons in the same run.
 
 ## State transitions
 
 | Behavior | Status |
 |---|---|
-| `/explain` starts writing a concept | `Learning` |
-| `/explain` verifies a written lesson | `Needs Validation` |
-| `/explain` interrupted mid-write | stays `Learning` |
-| `/explain` revisits a `Mastered` topic | `Learning`, then `Needs Validation` |
-| `/quiz` (later phase) | the only path to `Mastered` |
+| `/learn-lesson` starts writing a concept | `Learning` |
+| `/learn-lesson` verifies a written lesson | `Needs Validation` |
+| `/learn-lesson` interrupted mid-write | stays `Learning` |
+| `/learn-lesson` revisits a `Mastered` topic | `Learning`, then `Needs Validation` |
+| `/learn-quiz` (later phase) | the only path to `Mastered` |
 
 ## Evals
 
-`skills/explain/evals/evals.json` covers six scenarios:
+`skills/learn-lesson/evals/evals.json` covers six scenarios:
 
-1. **Fresh single** — `/explain Processes` resolves the unique row, sets
+1. **Fresh single** — `/learn-lesson Processes` resolves the unique row, sets
    `Learning` + `Current Focus` before writing, produces one lesson ending in
    three just-right self-check questions with separated answers and using
    diagrams/tables and highlight/quote features where the concept suits, moves
    the row to `Needs Validation` with `Last Learned` updated, appends one
    history event, and never enters an interactive Q&A loop.
-2. **Named batch** — `/explain Processes Threads Scheduling` writes all three
+2. **Named batch** — `/learn-lesson Processes Threads Scheduling` writes all three
    lessons (delegated to subagents when available, sequential fallback
    otherwise), updates each row independently, appends one history event per
    lesson, and leaves `Current Focus` on the last concept.
-3. **Pending list** — `/explain` with no arguments lists the `Unexplored`
+3. **Pending list** — `/learn-lesson` with no arguments lists the `Unexplored`
    concepts, writes only the confirmed subset (or all), and reports "nothing
    to explain" when nothing is pending.
 4. **Ambiguous concept** — a concept matching two workspaces raises the
@@ -341,5 +341,5 @@ The user tests in a dev vault (`scripts/dev.sh --new-env`, optionally
 `--agent=pi|cc|codex` to launch the agent inside it), then runs the six eval
 scenarios. The skill passes when every completion condition holds and
 `scripts/dev.sh --sync-resources --check` reports the explain reference
-current. The remaining phases (`/quiz`, `/explore`) follow after the user
+current. The remaining phases (`/learn-quiz`, `/learn-note`) follow after the user
 confirms.

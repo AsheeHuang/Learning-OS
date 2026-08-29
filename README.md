@@ -104,15 +104,15 @@ Learning OS defines how learning content, progress, relationships, questions, an
 
 ## Planned Skills
 
-| Skill         | Description                                                                 |
-| ------------- | --------------------------------------------------------------------------- |
-| `/learn`      | Create or continue a topic and generate its knowledge map                   |
-| `/explain`    | Deep-dive into the concept you are currently learning                       |
-| `/explore`    | Send a question or sub-topic to a subagent, create a note, and link it back |
-| `/quiz`       | Test understanding and update learning progress                             |
-| `/flashcards` | Generate Obsidian Spaced Repetition-compatible flashcards                   |
-| `/review`     | Find weak or stale knowledge to revisit                                     |
-| `/organize`   | Review notes for duplicates, missing links, and structural issues           |
+| Skill               | Description                                                                 |
+| ------------------- | --------------------------------------------------------------------------- |
+| `/learn-init`       | Create or continue a topic and generate its knowledge map                   |
+| `/learn-lesson`     | Deep-dive into the concept you are currently learning                       |
+| `/learn-note`   | Send a question or sub-topic to a subagent, create a note, and link it back |
+| `/learn-quiz`       | Test understanding and update learning progress                             |
+| `/learn-flashcards` | Generate Obsidian Spaced Repetition-compatible flashcards                   |
+| `/learn-review`     | Find weak or stale knowledge to revisit                                     |
+| `/learn-organize`   | Review notes for duplicates, missing links, and structural issues           |
 
 ---
 

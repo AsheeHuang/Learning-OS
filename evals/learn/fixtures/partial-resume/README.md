@@ -1,6 +1,6 @@
 # Partial resume fixture
 
-This fixture represents an interrupted `/learn Databases` setup:
+This fixture represents an interrupted `/learn-init Databases` setup:
 
 - `MISSION.md` and `MAP.md` already contain human-authored state.
 - `PROGRESS.md` contains one existing `Needs Validation` row.

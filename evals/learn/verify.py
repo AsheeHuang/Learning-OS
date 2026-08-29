@@ -348,7 +348,7 @@ def verify_case(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify a Learning OS /learn eval workspace")
+    parser = argparse.ArgumentParser(description="Verify a Learning OS /learn-init eval workspace")
     parser.add_argument("--case", required=True, choices=["fresh-topic", "partial-resume", "missing-mission"])
     parser.add_argument("--vault", type=Path, required=True)
     parser.add_argument("--initial-vault", type=Path)

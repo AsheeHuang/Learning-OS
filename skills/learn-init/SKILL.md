@@ -1,17 +1,17 @@
 ---
-name: learn
+name: learn-init
 description: Start or resume a persistent Learning OS topic workspace and create its mission, breadth-first map, progress state, history, and trusted resources without generating lessons.
 disable-model-invocation: true
 argument-hint: "<topic>"
 ---
 
-# Learn
+# Learn Init
 
-Create or resume the top-level workspace for one learning topic. This skill charts the subject before teaching it; `/explain` creates lesson content later.
+Create or resume the top-level workspace for one learning topic. This skill charts the subject before teaching it; `/learn-lesson` creates lesson content later.
 
 ## Source of truth
 
-Read the bundled [Learning OS protocol](references/learning-protocol.md) before writing files. Its workspace paths, file formats, status vocabulary, link rules, and invariants are authoritative. This skill defines the `/learn` sequence only.
+Read the bundled [Learning OS protocol](references/learning-protocol.md) before writing files. Its workspace paths, file formats, status vocabulary, link rules, and invariants are authoritative. This skill defines the `/learn-init` sequence only.
 
 ## 1. Resolve the topic
 
@@ -145,5 +145,5 @@ Finish only when all conditions hold:
 - Every map concept appears exactly once in `PROGRESS.md` as `Unexplored`, except statuses preserved during resume or recovery.
 - `HISTORY.md` contains no rewritten prior events.
 - `RESOURCES.md` contains verified sources or honest empty headings.
-- `lessons/` and `notes/` contain no files created by `/learn`.
+- `lessons/` and `notes/` contain no files created by `/learn-init`.
 - The learner has been shown the map, given the possible next steps, and asked where to begin.

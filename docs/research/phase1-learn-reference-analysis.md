@@ -1,8 +1,8 @@
-# Phase 1 `/learn`: Primary-Source Reference Analysis
+# Phase 1 `/learn-init`: Primary-Source Reference Analysis
 
 ## Scope and conclusion
 
-This note compares two reference implementations with the current Learning OS contract: [the Learning OS MVP protocol](../learning-protocol.md), especially its `/learn` skill contract, and [the Phase 1 section of the direction review](../learning-os-direction-review.md#phase-1實作-learn).
+This note compares two reference implementations with the current Learning OS contract: [the Learning OS MVP protocol](../learning-protocol.md), especially its `/learn-init` skill contract, and [the Phase 1 section of the direction review](../learning-os-direction-review.md#phase-1實作-learn-init).
 
 The references solve different parts of the problem:
 
@@ -62,7 +62,7 @@ The current protocol and direction review already settle most of the product bou
 
 | Adopt now | Source pattern | Fit with the Learning OS protocol | Phase 1 form |
 |---|---|---|---|
-| Mission as the initialization gate | Teach | Extends the existing `MISSION.md` and `/learn` steps | Ask only for missing intent and baseline information; persist it before map generation; create no lesson. |
+| Mission as the initialization gate | Teach | Extends the existing `MISSION.md` and `/learn-init` steps | Ask only for missing intent and baseline information; persist it before map generation; create no lesson. |
 | One topic per durable workspace | Teach | Matches `Learn/<topic>/` and file-based continuity | Resolve the vault-root-relative destination before writing; distinguish fresh, resumed, and conflicting workspaces. |
 | Concise outcome and scope language | Teach | Matches `Why`, outcomes, success criteria, constraints, and out of scope | Keep answers learner-authored and operational; reject vague goals such as “understand everything.” |
 | Claimed knowledge is not mastery | Teach | Matches the assessment-only `Mastered` invariant | Store initial capability claims in the mission, but initialize every map concept as `Unexplored`; only later assessment evidence can establish mastery. |
@@ -71,8 +71,8 @@ The current protocol and direction review already settle most of the product bou
 | Choice-oriented completion | Learn Anything | Matches the Phase 1 final step | After files are consistent, show the map, summarize whether the workspace is new/resumed and whether sources were curated, then ask for one first concept. |
 | Canonical current state and consistency checks | Learn Anything | Matches `PROGRESS.md` as the sole current-status source | Keep Markdown canonical. Before completion, verify one progress row per unique map concept, valid paths/statuses, and preserved existing states. Do not add JSON. |
 | Artifact-first visible output | Learn Anything | Matches file-based continuity | Persist and verify `MISSION.md`, `MAP.md`, `PROGRESS.md`, `HISTORY.md`, and `RESOURCES.md` before presenting their result in chat. |
-| Idempotent resume | Both | Required by the direction review's Phase 1 acceptance criteria | Read existing mission/progress/map first; ask only for missing fields; never regenerate a valid map, reset progress, or rewrite history merely because `/learn` was invoked again. |
-| Explicit human invocation | Teach | Appropriate for a state-creating command | Keep `/learn` user-invoked and expose one canonical command spelling. |
+| Idempotent resume | Both | Required by the direction review's Phase 1 acceptance criteria | Read existing mission/progress/map first; ask only for missing fields; never regenerate a valid map, reset progress, or rewrite history merely because `/learn-init` was invoked again. |
+| Explicit human invocation | Teach | Appropriate for a state-creating command | Keep `/learn-init` user-invoked and expose one canonical command spelling. |
 
 ### Recommended Phase 1 sequence
 
@@ -93,11 +93,11 @@ This changes neither the Markdown source-of-truth decision nor the Phase 1 artif
 
 - **Current-directory-as-topic routing.** Teach's ambiguous relative workspace must not replace Learning OS's explicit vault-root `Learn/<topic>/` boundary.
 - **JSON as canonical state.** Learn Anything's `state.json` plus generated Markdown projection conflicts with the project's defining human-editable Markdown contract. `PROGRESS.md` remains canonical.
-- **Raw model-assigned confidence as mastery.** Numeric confidence and practice-count thresholds are not adequate assessment evidence and conflict with the protocol's `/quiz`-only mastery gate.
+- **Raw model-assigned confidence as mastery.** Numeric confidence and practice-count thresholds are not adequate assessment evidence and conflict with the protocol's `/learn-quiz`-only mastery gate.
 - **Model edits to hidden state followed only by post-write validation.** Phase 1 has no need for a hidden record that can diverge from human-readable state.
 - **Implicit prerequisites or personalized recommendations presented as persisted facts.** If relationships are not represented and reviewed, the agent should not pretend they are deterministic.
 - **HTML-first lessons, shared stylesheets, and reusable asset bootstrapping.** They add a second presentation system to an Obsidian-first product.
-- **Multiple spellings for the same command or unsupported host-capability claims.** Phase 1 should advertise one `/learn` entry point and only behavior shared by supported hosts.
+- **Multiple spellings for the same command or unsupported host-capability claims.** Phase 1 should advertise one `/learn-init` entry point and only behavior shared by supported hosts.
 - **Pre-generating lessons, notes, glossary entries, or reference documents.** Both the current protocol and evidence-gated learning principles favor lazy creation after learner choice.
 
 ### Defer until the core learning loop is proven
@@ -106,24 +106,24 @@ This changes neither the Markdown source-of-truth decision nor the Phase 1 artif
 - **Deterministic renderer/validator scripts and transactional mutation commands.** Learn Anything demonstrates their value, but adding a TypeScript runtime now would widen a skill-and-Markdown MVP. Start with explicit completion checks and fixtures; add code only after repeated failures justify it.
 - **Glossary lifecycle and Teach-style learning-record files.** Their evidence discipline is useful, but Learning OS already has mission, history, and assessments. A new artifact type needs a named owner and retrieval contract before it is added.
 - **Review scheduling, spaced repetition, flashcards, scoring models, and confidence decay.** Neither reference supplies a trustworthy complete scheduler, and the direction review places these after the four-command core loop.
-- **Installer migration machinery, multi-host adapter registries, dashboards, and web UI.** These solve distribution or later product concerns, not Phase 1 `/learn` correctness.
+- **Installer migration machinery, multi-host adapter registries, dashboards, and web UI.** These solve distribution or later product concerns, not Phase 1 `/learn-init` correctness.
 - **Concurrency controls.** Atomic writes and locking become important with multiple writers, but Phase 1 can explicitly assume one active writer per topic workspace.
 
 ## 5. High-impact Phase 1 decisions still requiring user input
 
-Most architectural questions in the direction review are now answered by `docs/learning-protocol.md`: workspace boundary, path-qualified links, progress statuses, assessment-only mastery, Markdown canonical state, and the artifact set should not be reopened. Four decisions still materially affect `/learn` acceptance behavior.
+Most architectural questions in the direction review are now answered by `docs/learning-protocol.md`: workspace boundary, path-qualified links, progress statuses, assessment-only mastery, Markdown canonical state, and the artifact set should not be reopened. Four decisions still materially affect `/learn-init` acceptance behavior.
 
 ### Decision 1 — What baseline must the mission capture?
 
-**Unresolved:** `MISSION.md` has `Current Level`, but neither the protocol nor Phase 1 acceptance criteria define whether `/learn` must elicit concrete prior capabilities, known gaps/misconceptions, and desired challenge level. Teach demonstrates why prior-knowledge claims matter but does not systematically collect them; Learn Anything omits learner intent almost entirely.
+**Unresolved:** `MISSION.md` has `Current Level`, but neither the protocol nor Phase 1 acceptance criteria define whether `/learn-init` must elicit concrete prior capabilities, known gaps/misconceptions, and desired challenge level. Teach demonstrates why prior-knowledge claims matter but does not systematically collect them; Learn Anything omits learner intent almost entirely.
 
 **Recommended MVP choice:** keep the existing headings and require `Current Level` to contain two concise parts: claimed prior exposure/capabilities and known gaps. Treat both as learner claims, never as mastery. Do not add a placement quiz or a new baseline artifact in Phase 1.
 
-**Acceptance consequence:** a fresh `/learn` cannot generate the map until outcome, constraints, concrete current capability, and known gaps are either supplied or explicitly recorded as unknown/none stated.
+**Acceptance consequence:** a fresh `/learn-init` cannot generate the map until outcome, constraints, concrete current capability, and known gaps are either supplied or explicitly recorded as unknown/none stated.
 
 ### Decision 2 — Should resource curation precede map generation?
 
-**Unresolved:** Teach's philosophy is resource-first. The current `/learn` sequence creates the map before resources, while the resource contract says research failure must not block map creation.
+**Unresolved:** Teach's philosophy is resource-first. The current `/learn-init` sequence creates the map before resources, while the resource contract says research failure must not block map creation.
 
 **Recommended MVP choice:** when research is available, curate the existing two-to-four-source budget **before** generating the map and use it to check terminology and coverage. When research is unavailable or fails, create honest empty headings and continue. This preserves non-blocking completion without grounding the map in known-unverified model memory when sources are readily available.
 
@@ -131,7 +131,7 @@ Most architectural questions in the direction review are now answered by `docs/l
 
 ### Decision 3 — What is the measurable map bound?
 
-**Unresolved:** Learning OS says “a few high-level areas” and breadth-first; Learn Anything supplies concrete but broad-topic-dependent limits. Without a bound, `/learn` can produce either an unusably shallow list or a full curriculum dump.
+**Unresolved:** Learning OS says “a few high-level areas” and breadth-first; Learn Anything supplies concrete but broad-topic-dependent limits. Without a bound, `/learn-init` can produce either an unusably shallow list or a full curriculum dump.
 
 **Recommended MVP choice:** exactly two tracked levels—area headings and concept links—with **10–20 total concepts as a soft target and 25 as a hard maximum**. A concept must be independently selectable for a future lesson. Do not persist dependency edges in Phase 1.
 
@@ -139,7 +139,7 @@ Most architectural questions in the direction review are now answered by `docs/l
 
 ### Decision 4 — How should topic collisions and inconsistent resumes behave?
 
-**Unresolved:** preserving the learner's topic wording means `OS`, `os`, and `Operating Systems` may become distinct folders. The protocol also requires preserving human edits but does not say what `/learn` should do when an existing mission conflicts with the requested topic, a map row is malformed, or progress contains an orphaned human-added concept.
+**Unresolved:** preserving the learner's topic wording means `OS`, `os`, and `Operating Systems` may become distinct folders. The protocol also requires preserving human edits but does not say what `/learn-init` should do when an existing mission conflicts with the requested topic, a map row is malformed, or progress contains an orphaned human-added concept.
 
 **Recommended MVP choice:** trim surrounding whitespace but otherwise preserve the requested display name and directory spelling. Before creating a new folder, inspect `Learn/` for case-insensitive exact-name collisions only; show the resolved path and ask before using or creating a conflicting destination. On resume, auto-repair only objectively derivable omissions (missing required directories/files or a missing progress row for an existing map link). Preserve and report malformed or orphaned human state rather than deleting or silently rewriting it.
 
@@ -149,4 +149,4 @@ Most architectural questions in the direction review are now answered by `docs/l
 
 Teach supplies the best **initialization ethics**: mission first, sources are curated, evidence is earned, and files provide continuity. Learn Anything supplies the best **workflow mechanics**: bound the map, make current state canonical, validate before presenting, and return a small set of choices. Learning OS should combine those behaviors inside its already-chosen Markdown protocol—not combine the references' artifact trees or runtimes.
 
-Once the four decisions above are recorded in the protocol, Phase 1 `/learn` is sufficiently specified for implementation and acceptance testing without adding a backend, schema runtime, dependency graph, scheduler, or lesson generation.
+Once the four decisions above are recorded in the protocol, Phase 1 `/learn-init` is sufficiently specified for implementation and acceptance testing without adding a backend, schema runtime, dependency graph, scheduler, or lesson generation.

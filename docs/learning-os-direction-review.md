@@ -43,9 +43,9 @@ note   = 探索分支
 
 這能避免所有內容最後都變成一堆沒有層次的筆記。
 
-### 4. `/explore` 是真正有差異化的功能
+### 4. `/learn-note` 是真正有差異化的功能
 
-四個 command 裡，`/explore` 最有產品特色。
+四個 command 裡，`/learn-note` 最有產品特色。
 
 一般 AI tutor 的問題是：
 
@@ -60,10 +60,10 @@ note   = 探索分支
 先做：
 
 ```text
-/learn
-/explain
-/explore
-/quiz
+/learn-init
+/learn-lesson
+/learn-note
+/learn-quiz
 ```
 
 暫時不做：
@@ -129,9 +129,9 @@ Obsidian vault
 
 第一版可以採用很簡單的規則：
 
-> Agent 執行時的目前工作目錄就是 Obsidian vault；Learning OS 使用 vault 下的 `Learn/` 作為 mother folder。`/learn OS` 會建立或進入 `Learn/OS/`；`/learn Operating Systems` 則會建立或進入 `Learn/Operating Systems/`。
+> Agent 執行時的目前工作目錄就是 Obsidian vault；Learning OS 使用 vault 下的 `Learn/` 作為 mother folder。`/learn-init OS` 會建立或進入 `Learn/OS/`；`/learn-init Operating Systems` 則會建立或進入 `Learn/Operating Systems/`。
 
-如果 `Learn/` 尚不存在，`/learn` 負責建立它。這個規則要寫死，否則每個 skill 都會對 workspace discovery 做不同假設。
+如果 `Learn/` 尚不存在，`/learn-init` 負責建立它。這個規則要寫死，否則每個 skill 都會對 workspace discovery 做不同假設。
 
 ### P0：概念名稱、檔名和 Wiki link 的 mapping
 
@@ -208,7 +208,7 @@ notes/processes.md
 | [[notes/race-conditions.md|Race Conditions]] | notes/race-conditions.md | Needs Review | 2026-08-20 | 2026-08-21 |
 ```
 
-`/quiz` 只需要解析 `Topics` table：
+`/learn-quiz` 只需要解析 `Topics` table：
 
 ```text
 Status == Needs Validation
@@ -222,15 +222,15 @@ Status == Needs Validation
 
 ```text
 Unexplored
-    ↓ /explain
+    ↓ /learn-lesson
 Learning
     ↓ lesson studied
 Needs Validation
-    ↓ /quiz
+    ↓ /learn-quiz
 Mastered
     ↓ weak assessment
 Needs Review
-    ↓ /explain
+    ↓ /learn-lesson
 Needs Validation
 ```
 
@@ -238,10 +238,10 @@ Needs Validation
 
 | 行為 | 狀態 |
 |---|---|
-| `/learn` 建立 map topic | `Unexplored` |
-| `/explain` 開始但尚未完成 | `Learning` |
-| `/explain` 完成 lesson | `Needs Validation` |
-| `/explore` 建立新 note | `Learning` 或 `Needs Validation` |
+| `/learn-init` 建立 map topic | `Unexplored` |
+| `/learn-lesson` 開始但尚未完成 | `Learning` |
+| `/learn-lesson` 完成 lesson | `Needs Validation` |
+| `/learn-note` 建立新 note | `Learning` 或 `Needs Validation` |
 | quiz 表現良好 | `Mastered` |
 | quiz 部分理解或有明顯缺口 | `Needs Review` |
 | 重新學習已 Mastered topic | `Needs Validation` |
@@ -252,7 +252,7 @@ Needs Validation
 
 `Mastered` 只能由 assessment 產生。
 
-### P0：`/explore` 的 subagent 行為要有 fallback
+### P0：`/learn-note` 的 subagent 行為要有 fallback
 
 spec 已經寫了：
 
@@ -306,7 +306,7 @@ Host does not support subagents
 ## Out of Scope
 ```
 
-不要讓 agent 每次都重寫整份 mission。後續 `/learn` 應該先讀取並詢問是否要更新。
+不要讓 agent 每次都重寫整份 mission。後續 `/learn-init` 應該先讀取並詢問是否要更新。
 
 ### `MAP.md`
 
@@ -336,7 +336,7 @@ Host does not support subagents
 
 MVP 階段不要要求 agent 自動建立完整 dependency graph，也不要掃描整個 workspace 自動重排 map。
 
-`/explore` 只在以下情況更新 map：
+`/learn-note` 只在以下情況更新 map：
 
 - 該概念是主題的必要前置知識
 - 該概念值得成為學習者可選擇的主線 topic
@@ -449,7 +449,7 @@ YYYY-MM-DD
   Detailed reference for Linux and UNIX programming. Use for: system calls and low-level programming.
 ```
 
-`/learn` 應該永遠建立 `RESOURCES.md`，至少包含 `Knowledge` 和 `Further Reading` headings。若 `Knowledge` 還是空的，`/explain` 不應該假裝 model memory 是已驗證來源，而應該要求補充來源、使用 host 提供的 research 工具，或在 lesson 中清楚標示未驗證內容。
+`/learn-init` 應該永遠建立 `RESOURCES.md`，至少包含 `Knowledge` 和 `Further Reading` headings。若 `Knowledge` 還是空的，`/learn-lesson` 不應該假裝 model memory 是已驗證來源，而應該要求補充來源、使用 host 提供的 research 工具，或在 lesson 中清楚標示未驗證內容。
 
 ### `assessments/`
 
@@ -465,9 +465,9 @@ Teach skill 的重點是：
 - lesson 結束時提醒學習者提出 follow-up questions
 - 把重要的學習洞察記錄到 learning records，供之後判斷下一個適合的學習內容
 
-Teach skill **沒有定義正式的分數、pass/fail、mastery status 或獨立的 assessment artifact**。因此 `/quiz` 的正式評估流程是 Learning OS 根據自己的產品需求做的延伸，不是直接複製 Teach skill。
+Teach skill **沒有定義正式的分數、pass/fail、mastery status 或獨立的 assessment artifact**。因此 `/learn-quiz` 的正式評估流程是 Learning OS 根據自己的產品需求做的延伸，不是直接複製 Teach skill。
 
-第一版 `/quiz` 建議採用 Teach 的 interactive feedback loop，而不是一次產生一大份考卷：
+第一版 `/learn-quiz` 建議採用 Teach 的 interactive feedback loop，而不是一次產生一大份考卷：
 
 1. 從 `PROGRESS.md` 找出所有 `Needs Validation` topics。
 2. 決定這次 assessment 要涵蓋哪些 topics。
@@ -589,12 +589,12 @@ examples/operating-systems/
 - agent 產出範例
 - 未來 regression test 的基礎
 
-### Phase 1：實作 `/learn`
+### Phase 1：實作 `/learn-init`
 
 目標只有：
 
 ```text
-/learn Operating Systems
+/learn-init Operating Systems
 ```
 
 能夠：
@@ -616,12 +616,12 @@ Acceptance criteria：
 - topic 初始狀態是 `Unexplored`
 - 可以中斷後重新執行並 resume
 
-### Phase 2：實作 `/explain`
+### Phase 2：實作 `/learn-lesson`
 
 目標：
 
 ```text
-/explain Processes
+/learn-lesson Processes
 ```
 
 能夠：
@@ -637,14 +637,14 @@ Acceptance criteria：
 
 這一階段先不要自動探索，不要 delegate subagent。先確保主流程可靠。
 
-### Phase 3：實作 `/quiz`
+### Phase 3：實作 `/learn-quiz`
 
 這是 validation gate，也是 MVP 最重要的功能。
 
 目標：
 
 ```text
-/quiz
+/learn-quiz
 ```
 
 能夠：
@@ -668,14 +668,14 @@ weak    → Needs Review
 
 不要在 MVP 做複雜分數、ELO、間隔重複演算法或統計模型。
 
-### Phase 4：實作 `/explore`
+### Phase 4：實作 `/learn-note`
 
 最後再加入 subagent integration。
 
 目標：
 
 ```text
-/explore context switch
+/learn-note context-switch
 ```
 
 能夠：
@@ -749,16 +749,16 @@ Skill 內容應該是 agent instruction，不是 TypeScript 程式。
 README 現在還列出：
 
 ```text
-/flashcards
-/review
-/organize
+/learn-flashcards
+/learn-review
+/learn-organize
 ```
 
 我會把它們明確標成 post-MVP，而不是讓使用者以為已經是第一版承諾。
 
 第一版成功條件應該只有：
 
-> 在一個乾淨的 Obsidian vault 中，Learning OS 能建立 `Learn/<topic>/` workspace；使用者可以執行 `/learn`、選擇 topic、執行 `/explain`，探索一個 side concept，最後執行 `/quiz`，而所有狀態都能從 Markdown 恢復。
+> 在一個乾淨的 Obsidian vault 中，Learning OS 能建立 `Learn/<topic>/` workspace；使用者可以執行 `/learn-init`、選擇 topic、執行 `/learn-lesson`，探索一個 side concept，最後執行 `/learn-quiz`，而所有狀態都能從 Markdown 恢復。
 
 如果這個 loop 不順，增加 flashcards 或 organize 不會改善產品。
 

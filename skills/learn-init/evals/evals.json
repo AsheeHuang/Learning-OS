@@ -1,9 +1,9 @@
 {
-  "skill_name": "learn",
+  "skill_name": "learn-init",
   "evals": [
     {
       "id": 1,
-      "prompt": "/skill:learn Operating Systems\n\nI am a backend engineer who knows application development but not OS internals. I want to understand processes, concurrency, virtual memory, and file systems well enough to diagnose production behavior and read systems documentation. Success means applying the concepts to unfamiliar production scenarios. I have 30 minutes per session, prefer concrete examples, and kernel development is out of scope.",
+      "prompt": "/skill:learn-init Operating Systems\n\nI am a backend engineer who knows application development but not OS internals. I want to understand processes, concurrency, virtual memory, and file systems well enough to diagnose production behavior and read systems documentation. Success means applying the concepts to unfamiliar production scenarios. I have 30 minutes per session, prefer concrete examples, and kernel development is out of scope.",
       "expected_output": "Creates Learn/Operating Systems with the complete protocol workspace, curates trusted resources before generating a bounded mission-grounded map, creates one Unexplored progress row per map concept, initializes history and empty artifact directories, then presents the map and asks where to begin.",
       "files": [],
       "assertions": [
@@ -17,7 +17,7 @@
     },
     {
       "id": 2,
-      "prompt": "/skill:learn Databases\n\nResume the existing learning workspace. Its setup may have been interrupted; preserve all existing human-authored content and learning state.",
+      "prompt": "/skill:learn-init Databases\n\nResume the existing learning workspace. Its setup may have been interrupted; preserve all existing human-authored content and learning state.",
       "expected_output": "Reads and preserves existing files and the Needs Validation status, creates only the missing protocol artifacts, reconciles only missing map rows as Unexplored, presents the existing map, and asks what to study next without regenerating lessons.",
       "files": [],
       "assertions": [
@@ -30,7 +30,7 @@
     },
     {
       "id": 3,
-      "prompt": "/skill:learn Distributed Systems",
+      "prompt": "/skill:learn-init Distributed Systems",
       "expected_output": "Asks for the missing mission information and waits without creating Learn/ or any learning artifacts.",
       "files": [],
       "assertions": [

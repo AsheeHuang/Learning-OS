@@ -1,10 +1,10 @@
-# Skill Testing Practices for `/learn`
+# Skill Testing Practices for `/learn-init`
 
 ## Conclusion
 
 **Some mature skill authors do use headless model runs plus deterministic assertions, but it is not common practice across skill repositories.** Anthropic's `skill-creator`, obra's Superpowers integration tests, Next.js documentation evals, and LangChain Deep Agents provide strong examples. Other experienced authors rely mainly on static checks, deterministic tests of bundled scripts or generated templates, and manual beta feedback. A headless behavioral harness is therefore an emerging best practice, not a baseline convention.
 
-For Learning OS, the smallest useful design is a testing pyramid: validate cheap structural invariants first, then run a few black-box `/learn` cases in disposable vaults and grade the resulting Markdown filesystem deterministically. Do not build a runtime, service, database, or Node toolchain. Use the host agent's existing headless CLI, a Bash runner, and a small Python verifier.
+For Learning OS, the smallest useful design is a testing pyramid: validate cheap structural invariants first, then run a few black-box `/learn-init` cases in disposable vaults and grade the resulting Markdown filesystem deterministically. Do not build a runtime, service, database, or Node toolchain. Use the host agent's existing headless CLI, a Bash runner, and a small Python verifier.
 
 ## Common practice, best practice, and benchmarking
 
@@ -27,9 +27,9 @@ By contrast, public repositories from Matt Pocock and Learn Anything show manual
 
 ## Smarter patterns than prose matching
 
-1. **Grade durable effects, not eloquence.** For `/learn`, the observable vault is the primary oracle. Verify required files and directories, map/progress bijection, allowed statuses, relative paths, the 25-concept cap, no generated lessons or notes, and no writes outside `Learn/<topic>/`. First-party guidance recommends deterministic graders for objective outcomes and traces for process diagnosis ([OpenAI skill eval guide](https://developers.openai.com/blog/eval-skills), [Anthropic agent eval guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)).
-2. **Test preservation with before/after fixtures.** Resume and recovery cases should compare protected human-authored text, existing statuses, dates, resources, and history prefixes byte-for-byte. This targets `/learn`'s highest-risk behavior more reliably than an LLM rubric.
-3. **Separate routing, process, and outcome.** Whether the skill loaded, which tools ran, and whether the workspace is valid are different facts. Because `/learn` is explicitly invoked and disables model invocation, trigger precision/recall is not an MVP priority; one explicit-load smoke test is enough. Workspace validity remains the release gate.
+1. **Grade durable effects, not eloquence.** For `/learn-init`, the observable vault is the primary oracle. Verify required files and directories, map/progress bijection, allowed statuses, relative paths, the 25-concept cap, no generated lessons or notes, and no writes outside `Learn/<topic>/`. First-party guidance recommends deterministic graders for objective outcomes and traces for process diagnosis ([OpenAI skill eval guide](https://developers.openai.com/blog/eval-skills), [Anthropic agent eval guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)).
+2. **Test preservation with before/after fixtures.** Resume and recovery cases should compare protected human-authored text, existing statuses, dates, resources, and history prefixes byte-for-byte. This targets `/learn-init`'s highest-risk behavior more reliably than an LLM rubric.
+3. **Separate routing, process, and outcome.** Whether the skill loaded, which tools ran, and whether the workspace is valid are different facts. Because `/learn-init` is explicitly invoked and disables model invocation, trigger precision/recall is not an MVP priority; one explicit-load smoke test is enough. Workspace validity remains the release gate.
 4. **Use paired runs for causal claims.** The same prompt and initial vault should run with the current skill and without it—or against the previous released skill. Report both absolute pass rate and per-case lift. SkillsBench uses this treatment-variable design because skills can help some tasks and harm others ([paper](https://arxiv.org/abs/2602.12670), [repository](https://github.com/benchflow-ai/skillsbench)).
 5. **Repeat only where nondeterminism matters.** One trial is adequate for quick smoke feedback; use two or three fresh trials for release candidates. Repeating trigger queries estimates routing rate, while repeating output cases estimates behavioral consistency; these should not be conflated.
 6. **Promote failures, do not replay outputs.** Save the redacted initial vault, user prompt, host/model/skill versions, trace, resulting files, and verifier result. A regression test reruns from the same initial state; merely re-grading an old output cannot detect changed behavior.
