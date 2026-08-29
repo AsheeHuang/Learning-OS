@@ -1,0 +1,83 @@
+{
+  "skill_name": "explain",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In this Obsidian vault, run /explain Scheduling. Learn/Operating Systems is a complete Learning OS workspace, and Scheduling is currently Unexplored. Do not enter an interactive teaching loop.",
+      "expected_output": "Resolves the unique Scheduling row, moves only Scheduling and Current Focus to Learning before writing, produces one lesson using the protocol headings that ends in exactly three just-right self-check questions plus a separated Self-Check Answers section, uses diagrams or tables and highlight/callout features where the concept lends itself, then moves Scheduling to Needs Validation with Last Learned updated and Last Tested preserved, appends one history event, and hands back without asking any teaching question.",
+      "files": [],
+      "assertions": [
+        "The agent resolves Scheduling from PROGRESS.md rather than creating an arbitrary lesson path.",
+        "Before writing, Current Focus points to Scheduling and only the Scheduling row moves to Learning while existing dates and unrelated rows are preserved.",
+        "The lesson uses the protocol headings and ends in exactly three self-check questions that require transfer (apply, predict, compare, or correct) rather than copying the explanation, plus a clearly separated Self-Check Answers section with an attempt-first instruction.",
+        "Important claims are source-grounded or honestly labeled unverified; no invented citation appears.",
+        "The lesson uses a diagram or table where the concept lends itself (Mermaid for standalone diagrams, ASCII for inline ones) and Markdown comment, highlight, or quote/callout features for emphasis, without forcing either.",
+        "After verification, Scheduling is Needs Validation with Last Learned updated and Last Tested unchanged, and no other row changed.",
+        "Exactly one append-only Learned history event records the lesson, and no interactive one-question-at-a-time loop was entered."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run /explain Scheduling Locks Semaphores in Learn/Operating Systems. All three are Unexplored.",
+      "expected_output": "Writes three lessons — delegated to one subagent per concept in parallel when subagents are available, or written sequentially by the main agent with the identical file contract otherwise — updates each progress row independently to Needs Validation with Last Learned set, appends one history event per lesson, and leaves Current Focus on the last completed concept.",
+      "files": [],
+      "assertions": [
+        "All three lesson files are written using the same headings and self-check quality bar, regardless of whether subagents were used.",
+        "When subagents are used, each subagent wrote only its lesson artifact and no subagent edited PROGRESS.md, HISTORY.md, or other state files.",
+        "Each concept's row is independently Needs Validation with Last Learned set to today and Last Tested preserved; every unrelated row is untouched.",
+        "One history event exists per verified lesson, and previous history is preserved.",
+        "Current Focus ends on the last completed concept, and no topic is marked Mastered."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run /explain with no arguments in Learn/Operating Systems, where Scheduling, Locks, Semaphores, and Deadlocks are Unexplored and nothing else is pending.",
+      "expected_output": "Lists the pending Unexplored concepts, asks the learner to confirm a subset or all of them, then writes lessons only for the confirmed set with per-concept state updates and history events; when nothing is pending, reports that there is nothing to explain and stops.",
+      "files": [],
+      "assertions": [
+        "The response lists the four pending concepts by name and asks the learner to confirm which to explain.",
+        "No lesson is written and no state changes before the learner confirms the set.",
+        "Only the confirmed concepts get lessons and Needs Validation rows; unconfirmed concepts stay Unexplored.",
+        "The empty-pending case reports nothing to explain without writing files or changing state."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run /explain Caching from the vault root. Both Learn/Operating Systems and Learn/Databases contain a mapped concept named Caching.",
+      "expected_output": "Detects the ambiguous concept match, lists the two topic workspaces, asks the learner to choose one, and makes no lesson, progress, or history changes before disambiguation.",
+      "files": [],
+      "assertions": [
+        "The agent searches immediate Learn topic workspaces and detects both matching progress rows.",
+        "The response refers to the workspaces by their topic directory names and asks the learner to choose.",
+        "No lesson file is created or updated before the workspace is disambiguated.",
+        "No progress row, current focus, date, or history entry changes before disambiguation."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run /explain Processes in Learn/Operating Systems. Processes is already Mastered with Last Tested set, and the learner wants a refresher before revalidation.",
+      "expected_output": "Moves Processes back to Learning and sets Current Focus before writing, produces the bounded lesson with three self-check questions and separated answers, sets Processes to Needs Validation with Last Learned updated and Last Tested preserved, and never marks it Mastered.",
+      "files": [],
+      "assertions": [
+        "The Mastered row is preserved as Mastered until the explain run moves it to Learning for the revisit.",
+        "After completion, Processes is Needs Validation with Last Learned updated and Last Tested unchanged, and every other row is untouched.",
+        "The existing lesson is updated rather than replaced wholesale, preserving any human edits.",
+        "The topic is never marked Mastered by /explain; only assessment evidence could restore it.",
+        "One append-only Learned history event records the revisit."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "A batch run of /explain Scheduling Locks Semaphores was interrupted: Scheduling's lesson was verified and persisted, Semaphores' write never began, and Locks' draft is mid-write. Run /explain again to finish the batch in Learn/Operating Systems.",
+      "expected_output": "Treats the run as a resumption from durable state: leaves Scheduling at Needs Validation with its history event, finishes the mid-write Locks lesson and marks it Needs Validation, writes Semaphores from scratch, and updates each row and history event independently without restarting completed work.",
+      "files": [],
+      "assertions": [
+        "Scheduling's verified lesson, Needs Validation row, Last Learned, and history event are preserved untouched.",
+        "The mid-write Locks draft is finished rather than discarded, and its row moves to Needs Validation.",
+        "Semaphores, whose write never began, stays Unexplored until its lesson is written in this run.",
+        "Each completed lesson has exactly one history event and Current Focus ends on the last completed concept.",
+        "No topic is marked Mastered and no interactive Q&A loop is entered."
+      ]
+    }
+  ]
+}
