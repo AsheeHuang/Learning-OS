@@ -4,13 +4,14 @@
     {
       "id": 1,
       "prompt": "In this Obsidian vault, run /explain Scheduling. Learn/Operating Systems is a complete Learning OS workspace, and Scheduling is currently Unexplored. Do not enter an interactive teaching loop.",
-      "expected_output": "Resolves the unique Scheduling row, moves only Scheduling and Current Focus to Learning before writing, produces one lesson using the protocol headings that ends in exactly three just-right self-check questions plus a separated Self-Check Answers section, then moves Scheduling to Needs Validation with Last Learned updated and Last Tested preserved, appends one history event, and hands back without asking any teaching question.",
+      "expected_output": "Resolves the unique Scheduling row, moves only Scheduling and Current Focus to Learning before writing, produces one lesson using the protocol headings that ends in exactly three just-right self-check questions plus a separated Self-Check Answers section, uses diagrams or tables and highlight/callout features where the concept lends itself, then moves Scheduling to Needs Validation with Last Learned updated and Last Tested preserved, appends one history event, and hands back without asking any teaching question.",
       "files": [],
       "assertions": [
         "The agent resolves Scheduling from PROGRESS.md rather than creating an arbitrary lesson path.",
         "Before writing, Current Focus points to Scheduling and only the Scheduling row moves to Learning while existing dates and unrelated rows are preserved.",
         "The lesson uses the protocol headings and ends in exactly three self-check questions that require transfer (apply, predict, compare, or correct) rather than copying the explanation, plus a clearly separated Self-Check Answers section with an attempt-first instruction.",
         "Important claims are source-grounded or honestly labeled unverified; no invented citation appears.",
+        "The lesson uses a diagram or table where the concept lends itself (Mermaid for standalone diagrams, ASCII for inline ones) and Markdown comment, highlight, or quote/callout features for emphasis, without forcing either.",
         "After verification, Scheduling is Needs Validation with Last Learned updated and Last Tested unchanged, and no other row changed.",
         "Exactly one append-only Learned history event records the lesson, and no interactive one-question-at-a-time loop was entered."
       ]
