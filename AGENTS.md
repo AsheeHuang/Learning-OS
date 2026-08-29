@@ -35,7 +35,7 @@ Before changing learning behavior or workspace formats, read `docs/learning-prot
 - Keep agent responses concise. Use ASCII diagrams when they make architecture, workflow, state transitions, or trade-offs easier to understand.
 - Think before doing. Inspect the relevant files, distinguish settled decisions from open questions, and understand the intended outcome before editing or implementing.
 - Ask the user before acting when a material requirement, product decision, or destructive change is uncertain. Do not block progress with low-impact questions; choose the simplest option consistent with the existing protocol.
-- Protect user-owned artifacts and dev vaults: never run destructive cleanup — e.g. `scripts/dev.sh --clean-env`, which removes every dev vault — during testing or routine work. First list what it would remove, verify nothing pre-existing is at risk, and get the user's confirmation before anything is deleted.
+- Protect user-owned artifacts and dev vaults: never run destructive cleanup during testing or routine work. First list what it would remove, verify nothing pre-existing is at risk, and get the user's confirmation before anything is deleted.
 - Treat Markdown files as durable source of truth. Conversation history and hidden agent state are not authoritative.
 - Preserve human edits and existing learning state. Prefer targeted, incremental changes over regeneration.
 - Keep the MVP small. Use existing coding-agent capabilities and current project dependencies before introducing scripts, services, schemas, adapters, or abstractions.
