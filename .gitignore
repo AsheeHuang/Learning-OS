@@ -1,3 +1,5 @@
 .eval-results/
 __pycache__/
 *.py[cod]
+.scratch/
+docs/
