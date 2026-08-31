@@ -29,6 +29,12 @@ Run all quiz cases:
 evals/learn/run.sh --suite quiz
 ```
 
+Run all note cases:
+
+```bash
+evals/learn/run.sh --suite note
+```
+
 Run one case or repeat release-candidate cases:
 
 ```bash
@@ -58,6 +64,14 @@ Use `--suite all` to run both suites. Results are written under `.eval-results/l
 - `quiz-dispute`: persists an unresolved grading dispute without finalizing or researching.
 - `quiz-conflict`: detects a concurrent progress edit against the durable baseline and writes nothing.
 - `quiz-finalization`: repairs an interrupted finalization without duplicate effects.
+
+## Note cases
+
+- `note-create`: creates a side note from Current Focus and preserves the main path.
+- `note-resume`: completes a partial note without overwriting human content or duplicating history.
+- `note-promotion`: verifies that MAP.md changes only after explicit promotion.
+- `note-unverified`: verifies honest source handling when research is unavailable.
+- `note-ambiguity`: blocks writes until the workspace/source is unambiguous.
 
 Prompts and expectations live in each skill's eval metadata. Scripted quiz turns live in `quiz-cases.json`. Resume input state is created from the bounded fixtures under `fixtures/`.
 

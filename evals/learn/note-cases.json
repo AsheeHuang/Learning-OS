@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "name": "note-create",
+      "turns": [
+        "In this Obsidian vault, run /learn-note Context Switch from the current focus. Do not start an interactive teaching or quiz loop."
+      ]
+    },
+    {
+      "name": "note-resume",
+      "turns": [
+        "Resume /learn-note Context Switch in the current workspace. Preserve the human observation in the partial note and do not start a quiz."
+      ]
+    },
+    {
+      "name": "note-promotion",
+      "turns": [
+        "Run /learn-note Context Switch from the current focus and explicitly promote this exploration into MAP.md as a main-path choice. Do not start a quiz."
+      ]
+    },
+    {
+      "name": "note-unverified",
+      "turns": [
+        "Run /learn-note Context Switch from the current focus without entering an interactive teaching loop. Research tools are unavailable, so do not invent citations."
+      ]
+    },
+    {
+      "name": "note-ambiguity",
+      "turns": [
+        "Run /learn-note Context Switch from the vault root. Do not make any changes until the source workspace is unambiguous."
+      ]
+    }
+  ]
+}

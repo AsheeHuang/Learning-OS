@@ -1,0 +1,50 @@
+{
+  "skill_name": "learn-note",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In this Obsidian vault, run /learn-note Context Switch from the current focus. Do not start an interactive teaching or quiz loop.",
+      "expected_output": "Creates or resumes notes/context-switch.md, links it to the current lesson and links the lesson back, records the note as Learning, preserves the lesson status and Current Focus, and appends one exploration history event.",
+      "files": [],
+      "assertions": [
+        "The source is resolved from the unique Current Focus rather than guessed from an arbitrary lesson.",
+        "The note follows the protocol headings and contains a path-qualified Source link.",
+        "The source lesson has exactly one reciprocal note link and its progress status/date remain unchanged.",
+        "The note has a Learning progress row with Last Learned updated and Last Tested preserved.",
+        "MAP.md remains unchanged for a side exploration and HISTORY.md gains one append-only exploration event.",
+        "The response does not start a quiz or mark the note or source Mastered."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Resume /learn-note Context Switch in a workspace containing a partial note. Preserve the human observation in the partial note and complete the durable connections without starting a quiz.",
+      "expected_output": "Completes the partial note in place, preserves human-authored content, repairs missing reciprocal state, and does not duplicate links or history.",
+      "files": [],
+      "assertions": [
+        "The existing note is updated in place rather than replaced wholesale.",
+        "Human-authored note content is preserved.",
+        "Missing source link/state effects are repaired idempotently and no duplicate history event is appended."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run /learn-note Context Switch from the current focus and explicitly promote this exploration into MAP.md as a main-path choice. Do not start a quiz.",
+      "expected_output": "Creates the normal note contract and adds the note path to MAP.md only because promotion was explicit, with a Learning progress row.",
+      "files": [],
+      "assertions": [
+        "The promoted note appears in MAP.md exactly once with a path-qualified notes link.",
+        "Without the explicit promotion wording, the same note operation would leave MAP.md unchanged."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run /learn-note Context Switch from the vault root where more than one workspace can supply the source. Make no changes until the source workspace is unambiguous.",
+      "expected_output": "Reports the ambiguity and asks the learner to choose a workspace/source without writing a note or changing any state file.",
+      "files": [],
+      "assertions": [
+        "No note, progress, map, source, or history file changes before disambiguation.",
+        "The response identifies the workspace/source ambiguity and asks for a choice."
+      ]
+    }
+  ]
+}

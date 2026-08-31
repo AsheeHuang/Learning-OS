@@ -9,6 +9,11 @@ quiz_cases_file="$repo_root/evals/learn/quiz-cases.json"
 quiz_skill="$repo_root/skills/learn-quiz/SKILL.md"
 quiz_fixture="$repo_root/evals/learn/fixtures/quiz-base/vault"
 quiz_prepare="$repo_root/evals/learn/prepare_quiz_fixture.py"
+note_cases_file="$repo_root/evals/learn/note-cases.json"
+note_skill="$repo_root/skills/learn-note/SKILL.md"
+note_fixture="$repo_root/evals/learn/fixtures/quiz-base/vault"
+note_prepare="$repo_root/evals/learn/prepare_note_fixture.py"
+note_verifier="$repo_root/evals/learn/verify_note.py"
 verifier="$repo_root/evals/learn/verify.py"
 fixtures_root="$repo_root/evals/learn/fixtures"
 pi_bin="${PI_BIN:-pi}"
@@ -34,13 +39,20 @@ quiz_cases=(
   quiz-conflict
   quiz-finalization
 )
+note_cases=(
+  note-create
+  note-resume
+  note-promotion
+  note-unverified
+  note-ambiguity
+)
 
 usage() {
   cat <<'EOF'
 Usage: evals/learn/run.sh [options]
 
 Options:
-  --suite <name>    init, quiz, or all (default: init)
+  --suite <name>    init, quiz, note, or all (default: init)
   --case <name>     Run one case from the selected suite, or all
   --runs <count>    Number of fresh trials per case (default: 1)
   --model <id>      Pi model override (or set PI_MODEL)
@@ -92,7 +104,7 @@ if ! [[ "$runs" =~ ^[1-9][0-9]*$ ]]; then
   printf 'Invalid --runs value: %s\n' "$runs" >&2
   exit 2
 fi
-if [[ "$selected_suite" != "init" && "$selected_suite" != "quiz" && "$selected_suite" != "all" ]]; then
+if [[ "$selected_suite" != "init" && "$selected_suite" != "quiz" && "$selected_suite" != "note" && "$selected_suite" != "all" ]]; then
   printf 'Invalid --suite value: %s\n' "$selected_suite" >&2
   exit 2
 fi
@@ -108,6 +120,9 @@ fi
 if [[ "$selected_suite" == "quiz" || "$selected_suite" == "all" ]]; then
   required_files+=("$quiz_cases_file" "$quiz_skill" "$quiz_prepare")
 fi
+if [[ "$selected_suite" == "note" || "$selected_suite" == "all" ]]; then
+  required_files+=("$note_cases_file" "$note_skill" "$note_prepare" "$note_verifier")
+fi
 for required in "${required_files[@]}"; do
   if [[ ! -f "$required" ]]; then
     printf 'Required file not found: %s\n' "$required" >&2
@@ -121,6 +136,9 @@ if [[ "$selected_suite" == "init" || "$selected_suite" == "all" ]]; then
 fi
 if [[ "$selected_suite" == "quiz" || "$selected_suite" == "all" ]]; then
   case_names+=("${quiz_cases[@]}")
+fi
+if [[ "$selected_suite" == "note" || "$selected_suite" == "all" ]]; then
+  case_names+=("${note_cases[@]}")
 fi
 if [[ "$selected_case" != "all" ]]; then
   valid=0
@@ -146,6 +164,14 @@ mkdir -p "$results_root"
 is_init_case() {
   local candidate="$1"
   for name in "${init_cases[@]}"; do
+    [[ "$candidate" == "$name" ]] && return 0
+  done
+  return 1
+}
+
+is_note_case() {
+  local candidate="$1"
+  for name in "${note_cases[@]}"; do
     [[ "$candidate" == "$name" ]] && return 0
   done
   return 1
@@ -187,6 +213,25 @@ raise SystemExit(f"Quiz case not found: {case_name}")
 PY
 }
 
+read_note_turns() {
+  local case_name="$1"
+  python3 - "$note_cases_file" "$case_name" <<'PY'
+import json
+import sys
+
+path, case_name = sys.argv[1], sys.argv[2]
+with open(path, encoding="utf-8") as file:
+    data = json.load(file)
+for item in data["cases"]:
+    if item["name"] == case_name:
+        for turn in item["turns"]:
+            sys.stdout.write(turn)
+            sys.stdout.write("\0")
+        raise SystemExit(0)
+raise SystemExit(f"Note case not found: {case_name}")
+PY
+}
+
 skill_revision="$(git -C "$repo_root" rev-parse --short HEAD 2>/dev/null || printf unknown)"
 if ! git -C "$repo_root" diff --quiet -- skills docs/learning-protocol.md evals/learn examples/operating-systems 2>/dev/null; then
   skill_revision="$skill_revision-dirty"
@@ -224,6 +269,10 @@ for case_name in "${case_names[@]}"; do
         ;;
     esac
     turns=("$(read_init_prompt "$eval_id")")
+  elif is_note_case "$case_name"; then
+    skill_file="$note_skill"
+    fixture="$note_fixture"
+    mapfile -d '' -t turns < <(read_note_turns "$case_name")
   else
     skill_file="$quiz_skill"
     fixture="$quiz_fixture"
@@ -244,7 +293,9 @@ for case_name in "${case_names[@]}"; do
     if [[ -n "$fixture" ]]; then
       cp -a "$fixture/." "$initial_vault/"
     fi
-    if ! is_init_case "$case_name"; then
+    if is_note_case "$case_name"; then
+      python3 "$note_prepare" --case "$case_name" --vault "$initial_vault"
+    elif ! is_init_case "$case_name"; then
       python3 "$quiz_prepare" --case "$case_name" --vault "$initial_vault"
     fi
     cp -a "$initial_vault/." "$vault/"
@@ -271,7 +322,7 @@ for case_name in "${case_names[@]}"; do
 
     for (( turn_index=0; turn_index<${#turns[@]}; turn_index++ )); do
       turn_args=("${base_args[@]}")
-      if is_init_case "$case_name"; then
+      if is_init_case "$case_name" || is_note_case "$case_name"; then
         turn_args+=(--no-session)
       else
         turn_args+=(--session-dir "$session_dir")
@@ -302,6 +353,10 @@ for case_name in "${case_names[@]}"; do
     done
     duration_seconds=$(( $(date +%s) - started_at ))
 
+    verifier_for_case="$verifier"
+    if is_note_case "$case_name"; then
+      verifier_for_case="$note_verifier"
+    fi
     verify_args=(
       --case "$case_name"
       --vault "$vault"
@@ -316,7 +371,7 @@ for case_name in "${case_names[@]}"; do
     fi
 
     set +e
-    python3 "$verifier" "${verify_args[@]}"
+    python3 "$verifier_for_case" "${verify_args[@]}"
     verifier_rc=$?
     set -e
 

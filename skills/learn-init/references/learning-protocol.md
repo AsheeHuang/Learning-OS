@@ -1,6 +1,6 @@
 # Learning OS MVP Protocol
 
-Status: Phase 3
+Status: Phase 4
 
 Learning OS is a file protocol executed by an existing coding agent. Markdown files are the source of truth; conversation, model memory, and host-specific state are not.
 
