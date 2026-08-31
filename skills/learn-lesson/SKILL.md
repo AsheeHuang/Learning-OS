@@ -23,7 +23,7 @@ Invocation:
 Resolve every named concept:
 
 1. Use the current `Learn/<topic>/` workspace, or inspect immediate `Learn/*/PROGRESS.md` files otherwise.
-2. Match names case-insensitively against aliases, paths, and slugs; each must match exactly one progress row.
+2. Match names case-insensitively against aliases and exact paths; each must match exactly one progress row.
 3. Ask about ambiguous or unmatched names before writing. Never add an unmapped lesson.
 
 Require `MISSION.md`, `MAP.md`, `PROGRESS.md`, `HISTORY.md`, and `RESOURCES.md`; report missing files and stop.
@@ -122,9 +122,9 @@ After verifying each lesson, set its row to `Needs Validation`, update only `Las
 
 ### Learned: <Concept>
 
-- Topic: [[lessons/<slug>.md|<Concept>]]
+- Topic: [[lessons/<Concept Title>.md|<Concept>]]
 - Status: `Learning` → `Needs Validation`
-- Artifact: [[lessons/<slug>.md|<Concept>]]
+- Artifact: [[lessons/<Concept Title>.md|<Concept>]]
 - Evidence: <self-check questions written; key points the lesson covers>
 ```
 

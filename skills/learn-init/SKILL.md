@@ -21,7 +21,7 @@ Take the topic from the invocation. If missing, ask what the learner wants to le
 Learn/<topic>/
 ```
 
-Preserve the learner's topic wording as the directory name. Use short kebab-case filenames inside the workspace.
+Preserve the learner's topic wording as the directory name. Use the human-facing concept title as the filename for lessons and notes, preserving spaces and meaningful punctuation such as `&` (for example, `User Kernel Mode & System Call.md`).
 
 ## 2. Inspect before asking or writing
 
@@ -84,7 +84,7 @@ Generate `MAP.md` from the mission and curated resources when available.
 
 - Follow the protocol's two-level, breadth-first map format and 10–20 concept target (25 maximum).
 - If more than 25 concepts are needed, ask whether to split the topic.
-- Use topic-workspace-relative Wiki links with aliases; links may target lessons that do not exist.
+- Use topic-workspace-relative Wiki links with aliases and human-facing title filenames; links may target lessons that do not exist.
 - Include only mission-relevant concepts and no declared out-of-scope material.
 - Do not add dependency edges or separately tracked subtopics in Phase 1.
 

@@ -48,16 +48,18 @@ Post-MVP features may add `flashcards/`, `references/`, and `assets/` without ch
 
 ## 3. Naming and links
 
-Use short kebab-case Markdown filenames. Keep human-facing titles in title case.
+Use the human-facing concept title as the Markdown filename for lessons and notes, preserving spaces and meaningful punctuation such as `&`. For example: `lessons/User Kernel Mode & System Call.md`. Do not convert lesson or note filenames to kebab-case slugs. Assessment filenames may keep their date-and-slug form for stable uniqueness.
 
 All generated Obsidian links identify the content role with a topic-workspace-relative path and use an alias for the human-facing title:
 
 ```markdown
-[[lessons/processes.md|Processes]]
-[[notes/context-switch.md|Context Switch]]
+[[lessons/Processes.md|Processes]]
+[[notes/Context Switch.md|Context Switch]]
 ```
 
-`lessons/processes.md` and `notes/processes.md` may both exist when they are genuinely different artifacts. Use their paths to disambiguate them. Do not duplicate identical content merely because both directories exist.
+`lessons/Processes.md` and `notes/Processes.md` may both exist when they are genuinely different artifacts. Use their paths to disambiguate them. Do not duplicate identical content merely because both directories exist.
+
+When `/learn-note` adds an exploration, scan every existing `lessons/*.md` and `notes/*.md` in that topic workspace. An artifact that materially references the new concept gets one path-qualified link to the note under `Related Concepts`, in addition to the reciprocal link in the selected source. This link-maintenance scan does not change metadata, statuses, `Current Focus`, the map, or history.
 
 The `Path` column in `PROGRESS.md` stores the same topic-workspace-relative path without Wiki-link syntax.
 
@@ -96,7 +98,7 @@ Organize the map into a few high-level areas and list concepts using Wiki links:
 
 ## <Area>
 
-- [[lessons/concept.md|Concept]]
+- [[lessons/<Concept Title>.md|Concept]]
 ```
 
 Track exactly two map levels: area headings and independently learnable concept links. Aim for 10–20 concepts; 25 is the hard maximum. A legitimately narrow topic may use fewer than 10. If the mission needs more than 25 concepts, ask whether to split it into multiple learning topics instead of generating a full curriculum.
@@ -114,13 +116,13 @@ The `Topics` table is the only source of topic status:
 
 ## Current Focus
 
-[[lessons/concept.md|Concept]]
+[[lessons/<Concept Title>.md|Concept]]
 
 ## Topics
 
 | Topic | Path | Status | Last Learned | Last Tested |
 |---|---|---|---|---|
-| [[lessons/concept.md|Concept]] | lessons/concept.md | Unexplored | — | — |
+| [[lessons/<Concept Title>.md|Concept]] | lessons/<Concept Title>.md | Unexplored | — | — |
 ```
 
 Use ISO dates (`YYYY-MM-DD`) and exactly these statuses:
@@ -159,9 +161,9 @@ Append events at the end of the file. If the latest date heading is today, appen
 
 ### Learned: <Topic>
 
-- Topic: [[lessons/concept.md|Concept]]
+- Topic: [[lessons/<Concept Title>.md|Concept]]
 - Status: `Learning` → `Needs Validation`
-- Artifact: [[lessons/concept.md|Concept]]
+- Artifact: [[lessons/<Concept Title>.md|Concept]]
 - Evidence: <concise learner-specific observation>
 ```
 
@@ -206,7 +208,7 @@ After `MISSION.md` is written and before `MAP.md` is generated, `/learn-init` cr
 
 ## Related Concepts
 
-- [[notes/related-concept.md|Related Concept]]
+- [[notes/<Related Concept>.md|Related Concept]]
 
 ## Sources
 ```
@@ -218,7 +220,7 @@ A lesson is short, mission-grounded, and aimed at one tangible learning win. It 
 ```markdown
 # <Concept>
 
-Source: [[lessons/source-concept.md|Source Concept]]
+Source: [[lessons/<Source Concept>.md|Source Concept]]
 
 ## Question
 
@@ -251,11 +253,11 @@ Use one workspace and a fixed topic set per artifact. Persist each selected prog
 - Date: YYYY-MM-DD
 - Status: in-progress | complete | abandoned
 - Topics:
-  - [[lessons/concept.md|Concept]]
+  - [[lessons/<Concept Title>.md|Concept]]
 
 ## Topic: <Concept>
 
-- Path: lessons/concept.md
+- Path: lessons/<Concept Title>.md
 - Starting status: Needs Validation
 - Starting Last Learned: YYYY-MM-DD | —
 - Starting Last Tested: YYYY-MM-DD | —
@@ -362,12 +364,12 @@ The argument names the note to create. The command identifies or asks for the so
 2. Read the source artifact, mission, progress, map, and relevant resources.
 3. Delegate research when the host supports subagents; otherwise perform the same work in the current agent.
 4. Create or update one note using the standard format.
-5. Add reciprocal path-qualified links between the source and note.
+5. Scan existing lessons and notes for material references to the new concept and add one path-qualified note link under `Related Concepts` in each relevant artifact, including the selected source.
 6. Add or update the progress row as `Learning` and update `Last Learned`.
 7. Add the concept to `MAP.md` only when it becomes a useful main-path choice.
 8. Append history.
 
-Completion criterion: the exploration is persisted and connected without changing the source lesson's learning status. Subagent and fallback execution produce the same file contract.
+Completion criterion: the exploration is persisted, linked from every relevant existing lesson or note, and connected without changing the source lesson's learning status. Subagent and fallback execution produce the same file contract.
 
 ### `/learn-quiz [topics...]`
 

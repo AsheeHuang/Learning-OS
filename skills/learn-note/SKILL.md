@@ -19,7 +19,7 @@ Invocation:
 /learn-note <note-name>
 ```
 
-The argument names the note to create or resume. Convert it to a short kebab-case filename and preserve a human-facing title.
+The argument names the note to create or resume. Use its human-facing concept title as the filename, preserving spaces and meaningful punctuation such as `&`; do not convert it to a kebab-case slug.
 
 Resolve the workspace as follows:
 
@@ -58,16 +58,16 @@ Ground important claims in persisted resources:
 - If they are insufficient and research tools are available, research a high-trust source and save its URL and use in the note.
 - If research is unavailable, write only supported material and mark the explanation unverified. Never invent a title or URL.
 
-When subagents are available, delegate one bounded exploration. It may create or update only `notes/<slug>.md`; provide the mission, source, resources, title, question, and note contract. Wait for and verify its artifact before finalizing state. Otherwise write the same artifact directly.
+When subagents are available, delegate one bounded exploration. It may create or update only the title-based note path; provide the mission, source, resources, title, question, and note contract. Wait for and verify its artifact before finalizing state. Otherwise write the same artifact directly.
 
 ## 5. Write or resume the note
 
-Create or update `notes/<slug>.md` with this structure:
+Create or update `notes/<Note Title>.md` with this structure:
 
 ```markdown
 # <Concept>
 
-Source: [[lessons/<source-slug>.md|<Source Concept>]]
+Source: [[lessons/<Source Title>.md|<Source Concept>]]
 
 ## Question
 
@@ -83,7 +83,7 @@ Source: [[lessons/<source-slug>.md|<Source Concept>]]
 
 ## Related Concepts
 
-- [[lessons/<related-slug>.md|<Related Concept>]]
+- [[lessons/<Related Title>.md|<Related Concept>]]
 
 ## Sources
 
@@ -94,46 +94,50 @@ Use actual relative paths and aliases in every generated link. The source may be
 
 Use only related concepts that resolve to existing artifacts or map links. Do not generate lessons or unrelated notes.
 
-## 6. Finalize idempotently
+## 6. Link every relevant artifact
 
-After verifying the note, apply these effects in order:
+After verifying the note, scan every existing `lessons/*.md` and `notes/*.md` in the same topic workspace, not just the selected source. Find artifacts that explicitly mention the note concept or an unambiguous alias, or explain a material relationship to it. In each relevant artifact, add exactly one path-qualified note link under `## Related Concepts`, creating that section before `## Sources` when absent:
 
-1. Add exactly one reciprocal link to the source's `Related Concepts` section, creating the section when absent and preserving other links:
+```markdown
+- [[notes/<Note Title>.md|<Concept>]]
+```
+
+Preserve all prose and existing links. Do not link metadata files such as `MISSION.md`, `MAP.md`, `PROGRESS.md`, `HISTORY.md`, or `RESOURCES.md`. The selected source must be among the scanned artifacts and must contain the reciprocal link before continuing. This scan only adds missing links; it does not change statuses, `Current Focus`, the map, or history.
+
+## 7. Finalize idempotently
+
+After the note and all relevant-artifact links are verified, apply these effects in order:
+
+1. Add the note to `PROGRESS.md` if absent:
 
    ```markdown
-   - [[notes/<slug>.md|<Concept>]]
-   ```
-
-2. Add the note to `PROGRESS.md` if absent:
-
-   ```markdown
-   | [[notes/<slug>.md|<Concept>]] | notes/<slug>.md | Learning | YYYY-MM-DD | — |
+   | [[notes/<Note Title>.md|<Concept>]] | notes/<Note Title>.md | Learning | YYYY-MM-DD | — |
    ```
 
    If present, set only its status to `Learning` and `Last Learned` to today's ISO date. Preserve `Last Tested` and unrelated rows. Keep `Current Focus` and the source status unchanged.
 
-3. Leave `MAP.md` unchanged unless the learner explicitly requests promotion. For promotion, add the path-qualified note link under the relevant area or `## Explorations`.
+2. Leave `MAP.md` unchanged unless the learner explicitly requests promotion. For promotion, add the path-qualified note link under the relevant area or `## Explorations`.
 
-4. Append exactly one event to `HISTORY.md`, under today's date heading when present:
+3. Append exactly one event to `HISTORY.md`, under today's date heading when present:
 
    ```markdown
    ## YYYY-MM-DD
 
    ### Explored: <Concept>
 
-   - Topic: [[notes/<slug>.md|<Concept>]]
-   - Source: [[lessons/<source-slug>.md|<Source Concept>]]
+   - Topic: [[notes/<Note Title>.md|<Concept>]]
+   - Source: [[lessons/<Source Title>.md|<Source Concept>]]
    - Status: `<previous status or Untracked>` → `Learning`
-   - Artifact: [[notes/<slug>.md|<Concept>]]
+   - Artifact: [[notes/<Note Title>.md|<Concept>]]
    - Evidence: <concise connection or question explored>
    ```
 
 On rerun, apply only missing effects. Preserve human edits, dates, source status, `Current Focus`, and unrelated state. Do not duplicate links, rows, or history events. Stop on malformed workspace, duplicate paths, ambiguous source, or conflicting human edits.
 
-## 7. Hand back
+## 8. Hand back
 
 Report the note path, source link, `Learning` status, updated `Last Learned` date, preserved source status and `Current Focus`, promotion state, and that `/learn-quiz` is the later validation step. Do not start a quiz or another lesson.
 
 ## Completion check
 
-Finish only when the workspace and source were unique before writing, the note and reciprocal link are verified, the note is `Learning` with `Last Learned` updated and `Last Tested` intact, `MAP.md` changed only after explicit promotion, protected state is unchanged, one history event exists, reruns are safe, and no mastery or hidden state was introduced.
+Finish only when the workspace and source were unique before writing, the note and every relevant-artifact link are verified, the note is `Learning` with `Last Learned` updated and `Last Tested` intact, `MAP.md` changed only after explicit promotion, protected state is unchanged, one history event exists, reruns are safe, and no mastery or hidden state was introduced.
