@@ -11,9 +11,7 @@ Run the formal Learning OS mastery gate. A lesson self-check is formative; only 
 
 ## Protocol
 
-`docs/learning-protocol.md` is authoritative in this repository. [references/learning-protocol.md](references/learning-protocol.md) is its distribution mirror. Read the protocol's **Assessment**, **`/learn-quiz`**, **Progressive context loading**, and **Protocol invariants** sections; consult other formats only when the current phase needs them.
-
-The protocol owns paths, schemas, statuses, diagnoses, outcomes, transitions, and recovery rules. This file only defines execution order and the quiz-specific gates below.
+Read the **Assessment**, **`/learn-quiz`**, **Progressive context loading**, and **Protocol invariants** sections of [the Learning OS protocol](references/learning-protocol.md). It owns paths, schemas, statuses, outcomes, transitions, and recovery; this skill adds quiz-specific execution gates.
 
 ## Workflow
 

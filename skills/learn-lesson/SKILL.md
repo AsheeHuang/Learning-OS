@@ -7,107 +7,67 @@ argument-hint: "<concept>... (optional)"
 
 # Learn Lesson
 
-Teach one or more concepts that already exist on a Learning OS map. Teaching
-is artifact-based: the lesson itself teaches, and each lesson ends in three
-self-check questions the learner uses to verify their own understanding. There
-is no live one-question-at-a-time conversation.
+Teach one or more mapped concepts by writing lessons with three formative self-check questions. The lesson is an artifact, not a live one-question-at-a-time conversation.
 
 ## Source of truth
 
-Read the bundled [Learning OS protocol](references/learning-protocol.md) before
-touching a workspace. Its workspace paths, lesson format, status vocabulary,
-link rules, history format, and invariants are authoritative. This skill
-defines the `/learn-lesson` sequence on top of it.
+Read [Learning OS protocol](references/learning-protocol.md) before touching a workspace. It owns paths, formats, statuses, links, history, and invariants; this skill adds the `/learn-lesson` sequence.
 
 ## 1. Resolve one or more concepts
 
-The invocation takes one of two forms:
+Invocation:
 
-- `/learn-lesson <Concept>...` — one or more mapped lesson concepts.
-- `/learn-lesson` — no arguments. List the pending concepts (status `Unexplored`
-  in `PROGRESS.md`) and ask the learner to confirm a subset or all of them.
-  When nothing is pending, report that there is nothing to explain and stop.
+- `/learn-lesson <Concept>...` — one or more mapped concepts.
+- `/learn-lesson` — list `Unexplored` concepts and ask the learner to confirm a subset. If none are pending, report and stop.
 
-Resolve every named concept against the workspace rules:
+Resolve every named concept:
 
-1. When the current directory is inside a topic workspace (`Learn/<topic>/`),
-   use it.
-2. Otherwise, inspect the immediate `Learn/*/PROGRESS.md` files and match each
-   concept against topic link aliases, paths, and filename slugs,
-   case-insensitively.
-3. A concept is usable only when exactly one progress row matches it.
-4. Ambiguous or unmatched names are raised as questions before any write
-   begins; the learner confirms the final set. Never silently add an unmapped
-   lesson.
+1. Use the current `Learn/<topic>/` workspace, or inspect immediate `Learn/*/PROGRESS.md` files otherwise.
+2. Match names case-insensitively against aliases, paths, and slugs; each must match exactly one progress row.
+3. Ask about ambiguous or unmatched names before writing. Never add an unmapped lesson.
 
-Require `MISSION.md`, `MAP.md`, `PROGRESS.md`, `HISTORY.md`, and
-`RESOURCES.md`. When any file is missing, name what is missing and stop so the
-workspace can be recovered first.
+Require `MISSION.md`, `MAP.md`, `PROGRESS.md`, `HISTORY.md`, and `RESOURCES.md`; report missing files and stop.
 
-A selected concept that is already `Learning` is a resumption, not a fresh
-lesson: finish its partial draft or complete its pending state update, and do
-not restart from scratch.
+A selected concept already `Learning` is a resumption: finish its partial draft or pending state update without restarting.
 
-## 2. Load only teaching context
+## 2. Load teaching context
 
-Read once, in this order:
-
-1. `MISSION.md`
-2. `PROGRESS.md`
-3. `MAP.md`
-4. the target lessons, when they exist
-5. the `RESOURCES.md` entries relevant to the concepts
-6. recent `HISTORY.md` evidence when it changes lesson difficulty
-
-Read other artifacts only when they supply a prerequisite, learner evidence,
-or a relationship a lesson needs. Do not load the whole workspace.
+Use the protocol's progressive context order, reading the mission, progress, map, target lessons, relevant resources, and history only when it affects difficulty. Read other artifacts only for needed prerequisites, learner evidence, or relationships.
 
 ## 3. Persist the start
 
-Each selected concept follows the same per-concept transition:
+Each selected concept follows:
 
 ```text
 Unexplored → Learning → Needs Validation
 ```
 
-Move a concept to `Learning` immediately before its lesson write begins, and
-set `Current Focus` to its path-qualified Wiki link. Preserve `Last Learned`,
-`Last Tested`, and every unrelated row exactly. A `Mastered` topic being
-revisited also moves to `Learning`; the completed revisit requires validation
-again — only `/learn-quiz` can restore `Mastered`.
+Move it to `Learning` immediately before writing and set `Current Focus` to its path-qualified link. Preserve `Last Learned`, `Last Tested`, and unrelated rows. Revisiting `Mastered` also moves to `Learning`; only `/learn-quiz` can restore `Mastered`.
 
-Concepts whose write has not begun stay `Unexplored`, so an interrupted run
-resumes cleanly.
+Concepts whose write has not begun stay `Unexplored`.
 
 ## 4. Design one learning win per lesson
 
-Choose one observable objective per lesson that advances the mission and fits
-the learner's level. A useful objective completes the sentence:
+Choose one observable objective per lesson that advances the mission and fits the learner's level:
 
 > After this lesson, the learner can …
 
-Keep the lesson inside that objective. Prefer a mental model that transfers
-over a list of facts. Use the learner's work, interests, or mission as the
-concrete setting when it genuinely clarifies the concept. Calibrate from
-existing learner evidence (mission, progress, history); there is no live
-diagnostic step.
+Keep the lesson inside that objective. Prefer a transferable mental model over a fact list, use the learner's context when it clarifies the concept, and calibrate from mission, progress, and history without a live diagnostic.
 
 ## 5. Ground in trusted sources
 
-Important claims are grounded:
+Ground important claims:
 
-- inspect the source rather than citing its title from memory;
-- prefer the workspace's trusted sources;
-- research a high-trust source when tools are available and the workspace
-  lacks one;
-- otherwise ask the learner for a source or label the material unverified.
+- inspect sources rather than citing titles from memory;
+- prefer trusted workspace sources;
+- research a high-trust source when tools are available and sources are insufficient;
+- otherwise ask the learner for a source or mark the material unverified.
 
 Never invent a citation.
 
 ## 6. Write the lesson
 
-Write one file per concept at the target row's `Path` using the protocol
-headings:
+Write one file per concept at the target row's `Path` using the protocol headings:
 
 ```markdown
 # <Concept>
@@ -129,101 +89,33 @@ headings:
 ## Self-Check Answers
 ```
 
-The artifact stands on its own after the run ends:
-
-- `Why This Matters` ties to the mission;
-- one observable objective;
-- the smallest sufficient model;
-- one worked example;
-- `Practice` holds exactly three self-check questions (see the quality bar,
-  §8);
-- path-qualified Wiki links for related concepts;
-- inline citations with a sources list;
-- `Self-Check Answers` at the very end, clearly separated, with a one-line
-  instruction to attempt the questions first;
-- presentation follows the rules in §7 (diagrams, tables, comments,
-  highlights, quotes/callouts).
-
-When a lesson exists, preserve human-written material and make targeted
-updates. Status never lives in the lesson; `PROGRESS.md` owns it.
+The lesson must be mission-grounded, bounded to one objective, source-grounded or honestly unverified, and contain exactly three transfer-oriented questions with separate answers at the end. Tell the learner to attempt the questions before reading the answers. Include path-qualified links and citations. Use visual Markdown features when they reduce effort. Preserve human-written material and update only the lesson; `PROGRESS.md` owns status.
 
 ## 7. Present with diagrams, tables, and markdown features
 
-Express content visually where the concept lends itself instead of defaulting
-to prose:
+Use visual Markdown features when they reduce effort:
 
-- **Diagrams.** Prefer a diagram when it lowers cognitive load — mental
-  models, flows, state transitions, and concept relationships. Use Mermaid
-  for standalone diagrams (rendered natively by Obsidian); use ASCII for
-  small or inline diagrams that must read in any plain-text view.
-- **Tables.** Use tables for comparisons, steps, and state mappings instead of
-  dense prose lists.
-- **Comments.** Use HTML comments (`<!-- ... -->`) for non-rendered
-  annotation: revision notes, per-section sources, or agent meta.
-- **Highlights and quotes.** Use `==highlight==` for key terms; blockquote
-  callouts (`> [!note]`, `> [!tip]`, `> [!warning]`, `> [!example]`,
-  `> [!question]`) for definitions, key takeaways, warnings, misconceptions,
-  and worked examples; blockquotes for quoted source passages.
-- The bar is whether it lowers the learner's effort to understand; do not
-  force a visual where prose is clearer.
+- Use Mermaid for standalone diagrams and ASCII for small inline diagrams.
+- Use tables for comparisons, steps, or state mappings.
+- Use HTML comments for non-rendered notes and callouts/highlights for key ideas.
+- Do not force a visual where prose is clearer.
 
 ## 8. Self-check questions — quality bar
 
-The three questions in `Practice` are the lesson's formative check:
+The three questions in `Practice` are formative checks:
 
-- **Just-right difficulty.** Each question requires transfer — applying the
-  concept to a new situation, predicting an outcome, comparing with a related
-  concept, or correcting a misconception — and cannot be answered by copying a
-  sentence from the explanation or example. Calibrate difficulty to the
-  learner's level from mission, progress, and history evidence.
-- **No hints.** Question text contains no scaffolding, no partial answers, and
-  no leading clues. Prefer open-ended prompts; if options are used, keep their
-  length and format comparable so they do not leak the answer.
+- Require transfer: apply the concept, predict an outcome, compare a related concept, or correct a misconception rather than copy the explanation. Calibrate to mission, progress, and history.
+- Give no hints or partial answers. Prefer open-ended prompts; comparable options must not leak the answer.
 
-The `Self-Check Answers` section holds concise key points or model answers,
-kept clearly apart from the questions.
+Keep concise key points or model answers in a separate `Self-Check Answers` section.
 
 ## 9. Multi-lesson runs and subagents
 
-When the run covers more than one concept:
+For multiple concepts, delegate one lesson per concept in parallel when subagents are available. They may write only lesson artifacts; the main agent verifies them and performs all progress and history updates. Without subagents, write the same artifacts sequentially.
 
-- **With subagents:** delegate lesson authoring — one subagent per concept,
-  run in parallel. Each subagent reads the mission, progress, map, and
-  relevant resources and writes its lesson artifact under the same contract
-  (headings, presentation rules, three self-check questions, separated
-  answers, sources, path-qualified links). Subagents never edit
-  `PROGRESS.md`, `HISTORY.md`, or any state file. The main agent verifies each
-  artifact against the quality bar, then performs all state updates and
-  history writes.
-- **Without subagents:** the main agent writes the same artifacts
-  sequentially.
+## 10. Finalize or resume
 
-Delegation changes execution, never the file contract.
-
-## 10. Complete or interrupt
-
-A lesson is complete when its artifact is verified: protocol headings, one
-bounded objective, presentation rules applied where the concept suits, three
-just-right self-check questions with separated answers, source-grounded or
-honestly unverified, and path-qualified links. Completing an artifact is
-evidence that a lesson exists, not durable mastery.
-
-On interruption:
-
-- verified lessons keep `Needs Validation` and their history events;
-- concepts whose write never began stay `Unexplored`;
-- a concept left mid-write stays `Learning` with its partial draft, and a
-  later run resumes it from durable state.
-
-## 11. Persist completion
-
-After a lesson artifact is verified:
-
-1. In `PROGRESS.md`, set only that concept's row to `Needs Validation`.
-2. Set `Last Learned` to today's ISO date; leave `Last Tested` unchanged.
-3. Keep `Current Focus` on the concept currently being written, ending on the
-   last completed concept of a run.
-4. Append one event at the end of `HISTORY.md`:
+After verifying each lesson, set its row to `Needs Validation`, update only `Last Learned`, preserve `Last Tested`, and keep `Current Focus` on the current or last completed concept. Append one event per lesson:
 
 ```markdown
 ## YYYY-MM-DD
@@ -236,32 +128,14 @@ After a lesson artifact is verified:
 - Evidence: <self-check questions written; key points the lesson covers>
 ```
 
-When today's date heading exists, append only the event beneath it. Preserve
-all earlier history.
+Append beneath today's heading when present and preserve earlier history. A verified lesson is evidence of a lesson, not mastery.
 
-## 12. Hand back to the learner
+On interruption, leave untouched concepts `Unexplored`, mid-write concepts `Learning` with their partial drafts, and verified lessons `Needs Validation`; resume from durable state.
 
-State the tangible win(s), where each lesson was saved, and that the topics
-are `Needs Validation`, not `Mastered`. Invite follow-up questions
-(learner-initiated) and mention that `/learn-quiz` is the validation step. Do not
-start further lessons in the same run.
+## 11. Hand back
+
+State the learning win, saved lesson paths, and `Needs Validation` status. Mention `/learn-quiz` as the validation step. Do not start further lessons.
 
 ## Completion check
 
-Finish only when:
-
-- every selected concept is either a verified lesson or an explicit stop
-  decision;
-- each lesson uses the protocol headings and ends in exactly three just-right
-  self-check questions with a separated `Self-Check Answers` section;
-- lessons are mission-grounded, bounded, source-grounded or honestly marked
-  unverified, and use path-qualified links;
-- lessons use diagrams or tables where the concept suits, and Markdown
-  comment, highlight, or quote/callout features for emphasis;
-- per-concept state is consistent: verified lessons are `Needs Validation`
-  with `Last Learned` updated and `Last Tested` preserved; untouched concepts
-  remain `Unexplored`; mid-write concepts remain `Learning`;
-- one append-only history event exists per verified lesson;
-- `Current Focus` points at the last completed concept;
-- no topic was marked `Mastered`;
-- no interactive Q&A loop was entered.
+Finish only when every selected concept has a verified, bounded, source-grounded or honestly unverified lesson with exactly three separated-answer self-checks; state and history match; untouched and mid-write concepts retain their proper states; `Current Focus` is correct; and no topic is `Mastered`.
