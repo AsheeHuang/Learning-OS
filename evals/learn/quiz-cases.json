@@ -1,0 +1,107 @@
+{
+  "cases": [
+    {
+      "name": "quiz-candidates",
+      "eval_id": 9,
+      "turns": [
+        "/skill:learn-quiz"
+      ]
+    },
+    {
+      "name": "quiz-strong",
+      "eval_id": 1,
+      "turns": [
+        "/skill:learn-quiz Processes\n\nUse Processes only and begin the assessment now.",
+        "A process is a running instance of program code with its own virtual address space and execution state. Starting the same service binary twice creates two processes whose runtime state is independent.",
+        "The faulty worker can terminate while the separate health-check process ordinarily continues running because its private address space is protected. Isolation prevents the worker from overwriting that process's private memory, but it does not guarantee service-level recovery or availability when components depend on the failed worker."
+      ]
+    },
+    {
+      "name": "quiz-remediation",
+      "eval_id": 2,
+      "turns": [
+        "/skill:learn-quiz Threads\n\nUse Threads only and begin the assessment now.",
+        "A thread is isolated like a process: every thread has its own address space, so one thread cannot affect another thread's memory.",
+        "Correction: threads in one process share the process address space and resources, while each thread has separate execution state such as its stack and registers.",
+        "Two worker threads share the counter, and an increment is a read-modify-write sequence; interleaving can make both read the same old value and lose an update. A lock or atomic operation makes it reliable. Separate processes normally have independent counters and address spaces, so they need IPC or shared memory to share one counter."
+      ]
+    },
+    {
+      "name": "quiz-unknown",
+      "eval_id": 3,
+      "turns": [
+        "/skill:learn-quiz Threads\n\nUse Threads only and begin the assessment now.",
+        "I don't know.",
+        "I still cannot explain the core distinction.",
+        "I don't know how shared memory explains that scenario either."
+      ]
+    },
+    {
+      "name": "quiz-resume",
+      "eval_id": 4,
+      "turns": [
+        "/skill:learn-quiz Processes Threads\n\nResume the exact existing Processes and Threads assessment now.",
+        "Because threads share one process address space, two unsynchronized workers updating the same queue can overwrite or observe inconsistent state. Separate stacks do not isolate the shared queue."
+      ]
+    },
+    {
+      "name": "quiz-abandon",
+      "eval_id": 5,
+      "turns": [
+        "/skill:learn-quiz Processes Threads\n\nUse exactly Processes and Threads and begin the assessment now.",
+        "A process is a running program instance with private execution state and an isolated virtual address space.",
+        "Abandon this assessment and start a fresh attempt with the same Processes and Threads topic set."
+      ]
+    },
+    {
+      "name": "quiz-unverified",
+      "eval_id": 6,
+      "turns": [
+        "/skill:learn-quiz Context Switch\n\nUse Context Switch only and begin the assessment now. Treat the selected note's important claims as unverified because its Sources section says so; do not research during the assessment.",
+        "A context switch saves registers, the program counter, stack pointer, and flags, then restores another thread's state so it resumes at the same point. Switching between processes may also change address-space or page-table context.",
+        "In both cases the scheduler saves thread A's registers, program counter, stack pointer, and flags, then restores thread B's corresponding CPU state. When both threads share one process, the address space and page tables usually stay the same; when B belongs to another process, the OS may switch the active address-space or page-table context, adding translation and TLB work. Cache disruption can happen in either case. The same-process and cross-process distinction is about which address-space context changes, not about whether CPU thread state is saved.",
+        "The note is unverified, but the direct answer is: save A's CPU context and restore B's in both handoffs; same-process A-to-B normally keeps the address space, while cross-process B-to-C may switch page tables or address-space context and incur TLB and cache costs."
+      ]
+    },
+    {
+      "name": "quiz-ambiguity",
+      "eval_id": 7,
+      "turns": [
+        "/skill:learn-quiz Caching"
+      ]
+    },
+    {
+      "name": "quiz-interruption",
+      "eval_id": 10,
+      "turns": [
+        "/skill:learn-quiz Processes Threads\n\nUse exactly Processes and Threads and begin the assessment now.",
+        "A program is passive executable code; a process is one running instance with its own virtual address space and execution state. Launching the same program twice creates separate processes with independent runtime state. If one process crashes or loops, another's private memory remains protected, but isolation does not guarantee CPU fairness, application recovery, availability, or reversal of external effects.",
+        "Whether the worker crashes or gets stuck in an infinite loop, the separate process's private address space is protected from direct memory corruption. A loop need not terminate and may still consume CPU, so process isolation does not guarantee resource fairness or service availability. Shared databases, logs, and persistent storage can still receive partial or invalid writes and are not rolled back by killing the process. I would enforce CPU limits or quotas and stop or restart the runaway worker as needed."
+      ]
+    },
+    {
+      "name": "quiz-dispute",
+      "eval_id": 11,
+      "turns": [
+        "/skill:learn-quiz Context Switch\n\nUse Context Switch only and begin the assessment now. Treat the selected note's important claims as unverified because its Sources section says so; do not research during the assessment.",
+        "Yes, assess Context Switch only and begin now.",
+        "A context switch always changes from user mode to kernel mode; those are the same operation.",
+        "I dispute that grading. Resolve it only from sources persisted in this workspace. If they do not settle the claim, record the unresolved dispute and leave the assessment in progress."
+      ]
+    },
+    {
+      "name": "quiz-conflict",
+      "eval_id": 12,
+      "turns": [
+        "/skill:learn-quiz Processes\n\nResume finalization, but preserve any concurrent human change to the progress row."
+      ]
+    },
+    {
+      "name": "quiz-finalization",
+      "eval_id": 8,
+      "turns": [
+        "/skill:learn-quiz Processes\n\nResume and finish the interrupted finalization."
+      ]
+    }
+  ]
+}

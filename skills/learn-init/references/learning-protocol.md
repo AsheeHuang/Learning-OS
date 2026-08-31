@@ -1,6 +1,6 @@
 # Learning OS MVP Protocol
 
-Status: Phase 0
+Status: Phase 3
 
 Learning OS is a file protocol executed by an existing coding agent. Markdown files are the source of truth; conversation, model memory, and host-specific state are not.
 
@@ -136,17 +136,17 @@ Do not duplicate status into separate `Needs Validation` or `Needs Review` lists
 #### State transitions
 
 ```text
-/learn-init adds a map topic                  → Unexplored
-/learn-lesson starts                          → Learning
-/learn-lesson completes                       → Needs Validation
-/learn-note creates an exploration note     → Learning
-learner explicitly requests validation   → Needs Validation
-/learn-quiz result: strong                     → Mastered
-/learn-quiz result: partial or weak            → Needs Review
-/learn-lesson revisits a topic                 → Learning → Needs Validation
+/learn-init adds a map topic                       → Unexplored
+/learn-lesson starts                               → Learning
+/learn-lesson completes                            → Needs Validation
+/learn-note creates an exploration note            → Learning
+learner explicitly requests validation             → Needs Validation
+/learn-quiz grounded result: strong                 → Mastered
+/learn-quiz result: partial or weak                 → Needs Review
+/learn-lesson revisits a topic                      → Learning → Needs Validation
 ```
 
-Only `/learn-quiz` can produce `Mastered`. Topics not tested by a quiz keep their existing status.
+Only a completed `/learn-quiz` assessment with grounded evidence can produce `Mastered`. Completed tested topics update `Last Tested`; in-progress or abandoned assessments do not change current status. Topics not tested by a completed assessment keep their existing state.
 
 ### `HISTORY.md`
 
@@ -235,28 +235,69 @@ A note records a side exploration without replacing or interrupting the source l
 
 ### Assessment
 
-Use `assessments/YYYY-MM-DD-<topic-slug>.md` for a completed or in-progress quiz session:
+An assessment is the formal validation artifact; lesson self-checks remain formative and do not change status. Use `assessments/YYYY-MM-DD-<selected-topic-slugs>.md`. Join multiple stable slugs with `-and-`; add a numeric suffix for a later same-day attempt instead of overwriting an earlier artifact.
+
+Assessment lifecycle is explicit:
+
+- `in-progress`: interaction or finalization is unfinished. Interaction leaves progress unchanged; interrupted finalization may have some recorded intended effects already applied and must resume idempotently.
+- `complete`: every selected topic has sufficient evidence and progress/history match the recorded outcomes.
+- `abandoned`: the learner chose a fresh attempt; preserve the artifact without applying it.
+
+Use one workspace and a fixed topic set per artifact. Persist each selected progress row's path, starting status, `Last Learned`, and `Last Tested` as recovery preconditions; they do not replace current state in `PROGRESS.md`. Group evidence by topic:
 
 ```markdown
 # Assessment: <Topics>
 
 - Date: YYYY-MM-DD
+- Status: in-progress | complete | abandoned
 - Topics:
   - [[lessons/concept.md|Concept]]
 
-## Questions
+## Topic: <Concept>
 
-### 1. <Question>
+- Path: lessons/concept.md
+- Starting status: Needs Validation
+- Starting Last Learned: YYYY-MM-DD | —
+- Starting Last Tested: YYYY-MM-DD | —
 
-Prompt:
+### Question 1
+
+Source section: <exact heading from the selected lesson or note>
+Prompt: <one concise short-answer question>
 
 Learner answer:
 
+Clarification prompt:
+
+Clarified answer:
+
 Feedback:
+
+Diagnosis: knowledge-gap | concept-confusion | prerequisite-gap | transfer-error | incomplete
+
+Remediation prompt:
+
+Revised answer:
+
+Follow-up feedback:
+
+Dispute:
+
+Resolution:
+
+Revision note:
 
 Evidence:
 
+Expected key points:
+
 Result: strong | partial | weak
+
+### Topic Outcome
+
+Grounding: verified | unverified
+Result: strong | partial | weak
+Evidence summary:
 
 ## Misconceptions
 
@@ -265,17 +306,26 @@ Result: strong | partial | weak
 ## Progress Changes
 ```
 
-Create the artifact before asking the first question. Ask one question at a time, then persist the learner's answer, feedback, evidence, and result before continuing. Do not prefill answers or results.
+Optional clarification and remediation fields appear only when used. Create the artifact before asking the first question. Persist each source section and each prompt, including its complete text, before displaying it; never leave a blank `Prompt:` placeholder. Persist the raw learner answer before grading, and feedback/evidence before continuing. After the turn is durable, show the learner visible feedback in chat before asking the next question. Use a compact format such as `Feedback: ...`, `Correct answer/core model: ...`, and `Missing or misconception: ...`; state the verdict, the correct answer or core model, and the missing premise or misconception. Feedback must not exist only in the assessment file. Do not prefill answers, expected key points, evidence, diagnoses, or results.
+
+Each topic needs both:
+
+- **Recall evidence**: explain or distinguish the concept in the learner's own words.
+- **Transfer evidence**: apply, compare, predict, diagnose, or correct it in a materially new situation.
+
+Usually one question gathers each dimension. Questions are open-ended by default and cannot copy lesson self-check wording or answers. Keep each question short enough for a one-to-three-sentence answer and give it one core task. A recall question tests one definition, distinction, or state set; a transfer question tests one prediction, comparison, diagnosis, or application. Avoid bundling process, thread, context-switch, scheduling, and recovery into one prompt; split those targets across the two dimensions. Each question records `Source section: <exact heading>` from the selected lesson or note, and the prompt must be answerable from that section. A transfer scenario may be new, but it must apply that section's concept rather than require unrelated lesson material. After grading, show the correct answer or core model in chat, even when the learner answered correctly; storing `Feedback` in Markdown alone is insufficient. A host graded quiz UI may supplement open-ended evidence, but one correct selection cannot establish mastery. Selection questions use comparable options and an explicit `I don't know` path.
+
+A neutral clarification may resolve one ambiguous answer without affecting the outcome. After corrective feedback, allow at most one remediation follow-up per topic. Preserve both answers. Successful remediation caps the topic at `partial`; an unresolved core gap supports `weak`. Record an explicit `I don't know` as `knowledge-gap`, not as a misconception or incorrect guess. When grading is disputed, persist the dispute and its source-based resolution; an unresolved dispute keeps the assessment `in-progress`.
 
 Judge each topic independently:
 
-- `strong`: accurate explanation plus successful comparison, example, prediction, or application; no critical misconception.
-- `partial`: core direction is understood, but the explanation, transfer, or distinctions are incomplete.
-- `weak`: the core concept cannot yet be explained or is confused with another concept.
+- `strong`: recall and transfer both succeed independently, with no critical misconception and no remediation dependency.
+- `partial`: the core direction is understood, but required evidence is incomplete, or remediation was needed.
+- `weak`: the core concept cannot be explained or a critical misconception remains after feedback.
 
-Prefer open-ended explanation, comparison, prediction, application, and misconception-correction questions. If multiple-choice questions are used, keep option lengths and formatting comparable so they do not leak the answer.
+Required dimensions are conjunctive rather than averaged; assessment uses no numeric pass score or confidence. A topic whose important claims do not trace to persisted workspace sources is capped at `partial` even when the answers would otherwise be strong.
 
-Update `PROGRESS.md` only after the assessment has enough evidence for that topic. Preserve the status of untested topics.
+For multiple topics, finish one topic at a time but apply progress atomically only after all selected topics have final outcomes. First record intended `Progress Changes`, then update selected progress rows and `Last Tested`, append one assessment-linked history event, and finally mark the artifact `complete`. The history event must state each topic's explicit `Outcome` (`strong`, `partial`, or `weak`) and actual `Status` transition; prose evidence does not replace either field. Preserve `Last Learned`, `Current Focus`, untested rows, and existing history. Resume finalization before new-attempt eligibility: apply a missing effect only when the current row still equals its recorded baseline, preserve a row already equal to the intended result, and stop without mutation when any selected row reflects an unrecorded concurrent edit.
 
 ## 5. Skill contracts
 
@@ -321,16 +371,17 @@ Completion criterion: the exploration is persisted and connected without changin
 
 ### `/learn-quiz [topics...]`
 
-1. Read `PROGRESS.md` first.
-2. With explicit topics, select those topics. Without arguments, list all `Needs Validation` topics and let the learner confirm or exclude candidates.
-3. Read the selected lessons, notes, mission, and relevant recent history.
-4. Create the assessment artifact.
-5. Ask one question at a time and persist each answer and feedback turn.
-6. Record evidence and a per-topic `strong`, `partial`, or `weak` result.
-7. Update tested topics in `PROGRESS.md` and set `Last Tested`.
-8. Append a concise history event linking the assessment.
+1. Read `PROGRESS.md` first and resolve exactly one topic workspace.
+2. Before evaluating new-attempt eligibility, resume an exact matching `in-progress` artifact from its recorded baseline and intended effects. Without arguments, offer existing in-progress work before new candidates.
+3. For a new attempt, accept explicit `Needs Validation` or `Needs Review` rows. Without arguments, list `Needs Validation` candidates and let the learner confirm or exclude them.
+4. Preflight the fixed selected set: every row resolves uniquely to a readable lesson or note, and its grounding state is known. Make no writes on ambiguity or malformed state.
+5. Abandon a matching artifact only on an explicit fresh-attempt request, or create a new artifact with durable row baselines before the first question.
+6. Ask one question at a time, persisting the prompt, raw answer, feedback, diagnosis, evidence, and optional clarification/remediation before continuing.
+7. Gather recall and transfer evidence and record one grounded per-topic `strong`, `partial`, or `weak` outcome.
+8. After every selected topic is complete, record intended transitions, update selected progress rows and `Last Tested`, append one concise assessment-linked history event, then mark the artifact `complete`.
+9. Resume interrupted interaction or finalization from durable fields without regenerating prompts, duplicating transitions, repeating history, or overwriting a concurrent human edit.
 
-Completion criterion: every selected topic has sufficient recorded evidence, the assessment is complete, and progress/history match its results.
+Completion criterion: every selected topic has sufficient recorded evidence, the artifact is `complete`, progress/history match its outcomes, and no unselected topic or protected field changed.
 
 ## 6. Progressive context loading
 

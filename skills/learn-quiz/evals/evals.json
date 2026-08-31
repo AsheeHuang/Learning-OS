@@ -1,0 +1,164 @@
+{
+  "skill_name": "learn-quiz",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In this Obsidian vault, run /learn-quiz Processes in Learn/Operating Systems. Processes is Needs Validation. Ask one question at a time. My first answer will explain the concept independently and my second will apply it to a new failure scenario.",
+      "expected_output": "Creates an in-progress assessment before the first question, persists recall and transfer turns, derives a grounded strong outcome, then atomically marks Processes Mastered with Last Tested updated and appends exactly one linked history event.",
+      "files": [],
+      "assertions": [
+        "The assessment artifact exists before the first question and has explicit lifecycle metadata and a fixed Processes topic set.",
+        "The skill asks one concise open-ended question at a time, persists the complete prompt before display, and records the source lesson heading for each question.",
+        "Each prompt has one core task, is answerable from its recorded lesson section, and does not bundle unrelated process, thread, context-switch, scheduling, and recovery concepts.",
+        "After each answer, the assistant visibly presents feedback and the correct answer or core model in chat rather than writing feedback only to Markdown.",
+        "Processes has independent recall and transfer evidence, verified grounding, and a strong topic outcome without copied lesson self-check wording."
+        "Only Processes changes from Needs Validation to Mastered; Last Tested is today while Last Learned and Current Focus are preserved.",
+        "Exactly one append-only history event links the completed assessment, and the artifact ends with Status complete."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run /learn-quiz Threads in Learn/Operating Systems. Threads is Needs Validation. I will initially confuse process isolation with thread isolation, then correct myself after feedback.",
+      "expected_output": "Records the original misconception, gives immediate diagnostic feedback, permits one remediation follow-up, preserves the revised answer, caps the result at partial, and moves Threads to Needs Review.",
+      "files": [],
+      "assertions": [
+        "Each Threads prompt is concise, has one core task, and records the exact lesson heading that grounds it.",
+        "The original answer remains in the assessment and the diagnosis identifies concept-confusion with the mistaken assumption and missing premise.",
+        "At most one remediation prompt is asked for Threads, and the revised answer plus follow-up feedback are persisted separately."
+        "Successful remediation produces partial rather than strong.",
+        "Threads becomes Needs Review with Last Tested updated; Last Learned, Current Focus, and unrelated rows are preserved.",
+        "The completed assessment and exactly one linked history event summarize the misconception without duplicating the transcript."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run /learn-quiz Threads in Learn/Operating Systems. Threads is Needs Validation. For the recall question I will answer: I don't know. After feedback I will still be unable to explain the core concept.",
+      "expected_output": "Treats I don't know as a genuine knowledge gap, not a failed guess, uses one bounded follow-up, records weak evidence, and moves Threads to Needs Review.",
+      "files": [],
+      "assertions": [
+        "The explicit non-answer is preserved and diagnosed as knowledge-gap rather than concept-confusion or an incorrect guess.",
+        "The skill provides focused feedback and no more than one remediation opportunity for the topic.",
+        "The unresolved core gap produces a weak topic outcome and Needs Review.",
+        "The quiz does not turn into a lesson, research new material, or invoke another skill.",
+        "Progress and history update only after the assessment is complete."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Resume the in-progress Processes and Threads assessment in Learn/Operating Systems. Processes already has complete recall and transfer turns. Threads has a persisted unanswered transfer prompt. Continue without regenerating prior work.",
+      "expected_output": "Resumes the exact assessment and unanswered Threads prompt, preserves prior Processes evidence, and withholds all progress changes until both topics are complete before idempotent finalization.",
+      "files": [],
+      "assertions": [
+        "The existing in-progress artifact is resumed instead of creating a new attempt.",
+        "Recorded Processes turns remain byte-preserved and the exact unanswered Threads prompt is displayed again.",
+        "No selected progress row changes while any selected topic lacks sufficient evidence.",
+        "After completion, both intended transitions are applied together and history contains exactly one assessment-linked event.",
+        "A resumed finalization does not duplicate progress effects or the history event."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run /learn-quiz Processes Threads in Learn/Operating Systems, then abandon it after the first Processes answer and start a fresh attempt with the same topics.",
+      "expected_output": "Preserves the partial attempt as abandoned without changing progress, then creates a distinct suffixed in-progress assessment with the same fixed topic set.",
+      "files": [],
+      "assertions": [
+        "The first artifact is marked abandoned and its recorded prompt and answer are preserved.",
+        "Abandonment changes no progress row, date, Current Focus, or history.",
+        "The fresh attempt uses a distinct numeric-suffix filename rather than overwriting the first artifact.",
+        "The new artifact has Status in-progress and the confirmed immutable topic set.",
+        "No completion event is written for the abandoned attempt."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Run /learn-quiz Context Switch in Learn/Operating Systems. The note is Needs Validation, but its explanation is explicitly unverified and does not trace to persisted resources. I will give excellent recall and transfer answers.",
+      "expected_output": "Assesses the eligible note but records unverified grounding, caps the otherwise strong evidence at partial, moves only the note to Needs Review, and leaves its source lesson unchanged.",
+      "files": [],
+      "assertions": [
+        "An eligible notes/ progress row is accepted as the assessment unit.",
+        "The assessment records Grounding unverified because persisted workspace sources do not support its important claims.",
+        "The topic outcome is capped at partial and cannot produce Mastered despite excellent answers.",
+        "Only Context Switch becomes Needs Review with Last Tested updated; the source lesson's status is unchanged.",
+        "The skill performs no new research during the assessment."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "From the vault root, run /learn-quiz Caching. Both Learn/Operating Systems and Learn/Databases have an eligible topic named Caching.",
+      "expected_output": "Detects the cross-workspace ambiguity, asks the learner to select one workspace, and writes no assessment or state change before disambiguation.",
+      "files": [],
+      "assertions": [
+        "The skill reads immediate Learn workspace progress files and detects both eligible matches.",
+        "The response names both workspaces and asks the learner to choose one.",
+        "No assessment artifact is created before disambiguation.",
+        "No progress row, date, Current Focus, or history entry changes.",
+        "The skill never combines topics from different workspaces into one assessment."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Resume finalization of a complete-evidence Processes assessment whose intended progress change has already been applied but whose history event and Status complete write were interrupted.",
+      "expected_output": "Detects the already-applied transition, appends only the missing linked history event, marks the artifact complete, and leaves every existing progress field unchanged.",
+      "files": [],
+      "assertions": [
+        "The skill recognizes finalization state from the assessment's intended progress changes.",
+        "The already-applied progress transition and Last Tested value are not rewritten or duplicated.",
+        "Exactly one missing history event is appended using the assessment link as the idempotency key.",
+        "The artifact is marked complete only after progress and history agree with its outcomes.",
+        "A second resume would make no further workspace changes."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Run /learn-quiz with no arguments in Learn/Operating Systems, where Processes, Threads, and Context Switch are Needs Validation and Scheduling is Unexplored.",
+      "expected_output": "Lists only the three Needs Validation candidates, recommends a focused selection, asks the learner to confirm or exclude topics, and writes nothing before confirmation.",
+      "files": [],
+      "assertions": [
+        "The response lists Processes, Threads, and Context Switch as candidates and does not list Scheduling as eligible.",
+        "The response asks the learner to confirm or exclude candidates and recommends a focused one-to-three-topic assessment.",
+        "No assessment artifact is created before topic confirmation.",
+        "No progress row, date, Current Focus, or history entry changes.",
+        "The skill does not begin a lesson or ask the first assessment question before confirmation."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Start /learn-quiz Processes Threads, answer both Processes questions, then interrupt immediately after the first Threads prompt is persisted.",
+      "expected_output": "Leaves one in-progress artifact with complete Processes evidence and the unanswered Threads prompt while preserving all progress and history until the full batch can finalize.",
+      "files": [],
+      "assertions": [
+        "The first prompt existed in the turn snapshot before the learner's first answer.",
+        "Processes has durable recall, transfer, and a topic outcome in the in-progress artifact.",
+        "Threads has a persisted unanswered prompt rather than a regenerated or pre-answered question.",
+        "Every selected progress row, date, Current Focus, and history entry remains identical to the initial vault.",
+        "The artifact remains in-progress and no completion history event exists."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "During /learn-quiz Context Switch, dispute corrective feedback and require resolution only from persisted workspace sources, which do not settle the claim.",
+      "expected_output": "Persists the dispute and unresolved resolution, leaves the assessment in-progress, and changes no progress or completion history while performing no research.",
+      "files": [],
+      "assertions": [
+        "The learner's dispute is persisted in the assessment artifact.",
+        "Resolution records that persisted sources do not settle the grading question.",
+        "The assessment remains in-progress and has no final topic outcome or Progress Changes.",
+        "Progress and history remain byte-preserved.",
+        "No research or new source is introduced during the assessment."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Resume a Processes finalization whose artifact baseline says Needs Validation but whose progress row now contains a conflicting human edit.",
+      "expected_output": "Detects the baseline conflict before applying or completing anything, reports it, and preserves the entire vault unchanged.",
+      "files": [],
+      "assertions": [
+        "In-progress recovery is selected before new-attempt eligibility despite the current row status.",
+        "The current row matches neither the recorded baseline nor intended result, so finalization stops as a conflict.",
+        "No assessment field, progress field, history event, lesson, note, mission, map, or resource changes.",
+        "The artifact remains in-progress.",
+        "The response identifies the concurrent-edit conflict and asks the learner to reconcile it outside finalization."
+      ]
+    }
+  ]
+}

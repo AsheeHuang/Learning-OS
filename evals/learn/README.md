@@ -1,9 +1,9 @@
-# `/learn-init` behavioral evals
+# Learning OS behavioral evals
 
-These evals execute the real Skill through Pi in disposable vaults, then grade durable filesystem effects with deterministic assertions.
+These evals execute real Learning OS skills through Pi in disposable Obsidian vaults, then grade durable filesystem and transcript effects with deterministic assertions.
 
 ```text
-fixture → headless Pi → generated vault → verify.py → result JSON
+fixture → headless Pi session → generated vault → verify.py → result JSON
 ```
 
 ## Requirements
@@ -13,59 +13,74 @@ fixture → headless Pi → generated vault → verify.py → result JSON
 - An authenticated `pi` CLI
 - A configured Pi model, or `--model <provider/model>`
 
-No Node runtime or custom agent runtime is used. The runner disables extensions and web tooling so the default cases are reproducible; `RESOURCES.md` must therefore keep empty `Knowledge` and `Further Reading` sections rather than populate remembered citations.
+No Node runtime or custom agent runtime is used. Initialization cases disable extensions and web tooling, so `RESOURCES.md` must keep honest empty sections rather than populate remembered citations. Quiz cases use a retained Pi session to deliver scripted learner turns one at a time.
 
 ## Run
 
-Run every case once:
+Run initialization cases:
 
 ```bash
 evals/learn/run.sh
 ```
 
-Run one case:
+Run all quiz cases:
 
 ```bash
-evals/learn/run.sh --case fresh-topic
+evals/learn/run.sh --suite quiz
 ```
 
-Repeat release-candidate cases:
+Run one case or repeat release-candidate cases:
 
 ```bash
-evals/learn/run.sh --runs 3 --model <provider/model>
+evals/learn/run.sh --suite quiz --case quiz-strong
+evals/learn/run.sh --suite quiz --runs 3 --model <provider/model>
 ```
 
-Results are written under `.eval-results/learn/<timestamp>/` and ignored by Git. Every run retains its initial vault, resulting vault, Pi JSONL event trace, stderr, and verification report.
+Use `--suite all` to run both suites. Results are written under `.eval-results/learn/<timestamp>/` and ignored by Git. Every run retains its initial vault, resulting vault, Pi JSONL event trace, stderr, session files, and verification report.
 
-## Cases
+## Initialization cases
 
 - `fresh-topic`: creates a complete workspace from supplied mission information.
 - `partial-resume`: repairs an interrupted workspace while preserving human-authored state.
 - `missing-mission`: asks for missing mission information and writes nothing.
 
-Prompts and high-level expectations live in `skills/learn-init/evals/evals.json`. Resume input state lives under `fixtures/partial-resume/vault/`.
+## Quiz cases
+
+- `quiz-candidates`: lists only eligible topics and writes nothing before confirmation.
+- `quiz-strong`: records grounded recall and transfer, then produces `Mastered`.
+- `quiz-remediation`: preserves correction turns and caps the outcome at `partial`.
+- `quiz-unknown`: distinguishes a knowledge gap from an incorrect guess.
+- `quiz-resume`: resumes an exact unanswered prompt and finalizes a multi-topic assessment atomically.
+- `quiz-abandon`: preserves an abandoned attempt and creates a suffixed fresh attempt.
+- `quiz-unverified`: caps unsupported content at `partial`.
+- `quiz-ambiguity`: blocks cross-workspace ambiguity before any write.
+- `quiz-interruption`: stops between topics and verifies prompt-before-answer snapshots plus atomic progress.
+- `quiz-dispute`: persists an unresolved grading dispute without finalizing or researching.
+- `quiz-conflict`: detects a concurrent progress edit against the durable baseline and writes nothing.
+- `quiz-finalization`: repairs an interrupted finalization without duplicate effects.
+
+Prompts and expectations live in each skill's eval metadata. Scripted quiz turns live in `quiz-cases.json`. Resume input state is created from the bounded fixtures under `fixtures/`.
 
 ## Verification
 
 `verify.py` checks observable protocol behavior:
 
-- required state files and artifact directories;
-- writes remain under `Learn/`;
-- bounded two-level map;
-- path-qualified lesson links;
-- MAP/PROGRESS bijection and valid statuses;
-- fresh topics begin `Unexplored` with blank dates;
-- `/learn-init` creates no lesson or note files;
-- required resource headings and initialized history;
-- resume preserves mission, map, existing statuses, and dates.
+- workspace and path boundaries;
+- assessment lifecycle and topic grouping;
+- durable prompt, raw answer, feedback, diagnosis, remediation, and evidence fields;
+- grounded qualitative outcomes;
+- atomic and idempotent progress transitions;
+- preserved `Last Learned`, `Current Focus`, unrelated rows, and append-only history;
+- no state writes before candidate confirmation or after abandonment;
+- per-turn vault snapshots proving prompt-before-answer durability and intermediate atomicity;
+- concurrent-edit conflict detection from persisted row baselines;
+- transcript checks proving feedback and the correct answer are visible in chat, not only stored in Markdown.
 
 Run verifier unit tests without a model:
 
 ```bash
 cd evals/learn
-python3 -m unittest -v test_verify.py
+python3 -m unittest -v test_verify.py test_quiz_verify.py
 ```
 
-## Evaluation layers
-
-The deterministic verifier is the release gate. Mission fidelity, map relevance, concept granularity, and source quality remain semantic review dimensions. Add a model or human grader only after deterministic checks pass.
+The deterministic verifier is the release gate. Question quality, source relevance, and feedback usefulness remain semantic review dimensions until a calibrated grader exists.

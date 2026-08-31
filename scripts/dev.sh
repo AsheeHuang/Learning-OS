@@ -7,22 +7,25 @@ protocol_source="$repo_root/docs/learning-protocol.md"
 skills_root="$repo_root/skills"
 vault_prefix="learning-os"
 vault_path=""
+vault=""
 
 usage() {
-  printf 'Usage: %s --new-env [--agent=<pi|cc|codex>] | --sync-resources [--check] | --sync-skills [--vault=<path>] [--link] | --clean-env\n\n' "${0##*/}"
+  printf 'Usage: %s --new-env [--vault=<path>] [--agent=<pi|cc|codex>] | --sync-resources [--check] | --sync-skills [--vault=<path>] [--link] | --clean-env\n\n' "${0##*/}"
   cat <<'EOF'
 Development helpers for Learning OS skills.
 
-  --new-env             Create a fresh dev vault under ${TMPDIR:-/tmp}
-                        with a copy of every skill under skills/.
+  --new-env             Prepare a dev vault with every skill under skills/.
+                        Uses --vault when set; otherwise creates a fresh vault
+                        under ${TMPDIR:-/tmp}.
   --agent=<pi|cc|codex> Launch the given agent inside the new vault and
                         install only that host's skill directory (pi/codex:
                         .agents/skills, cc: .claude/skills). Requires
                         --new-env.
   --sync-skills         Refresh an existing dev vault with the current
                         skills/ tree after editing a skill.
-  --vault=<path>        Target vault for --sync-skills. Defaults to the
-                        newest vault under ${TMPDIR:-/tmp}/learning-os-*.
+  --vault=<path>        Target vault for --new-env or --sync-skills. Without
+                        it, --sync-skills uses the newest temporary vault under
+                        ${TMPDIR:-/tmp}/learning-os-*.
   --link                With --sync-skills, replace the vault's copied
                         skills with symlinks to skills/ so edits are live;
                         repeat without --link to go back to copies.
@@ -30,13 +33,14 @@ Development helpers for Learning OS skills.
                         references/learning-protocol.md.
   --sync-resources --check
                         Verify every skill's bundled protocol is current.
-  --clean-env           Remove every dev vault created by --new-env.
+  --clean-env           Remove temporary dev vaults created by --new-env.
+                        Never removes a vault supplied through --vault.
   -h, --help            Show this help.
 EOF
 }
 
 create_env() {
-  local name source manifest dir
+  local name source manifest dir target
   local -a skills=() dirs=()
 
   case "$agent" in
@@ -45,8 +49,18 @@ create_env() {
     *)        dirs=(".claude/skills" ".agents/skills") ;;
   esac
 
-  vault_path="$(mktemp -d "${TMPDIR:-/tmp}/${vault_prefix}-XXXXXX")"
-  printf 'learning-os dev vault\n' > "$vault_path/.learning-os-dev"
+  if [[ -n "$vault" ]]; then
+    if [[ ! -d "$vault" ]]; then
+      printf 'Vault not found: %s\n' "$vault" >&2
+      exit 1
+    fi
+    vault_path="$(cd "$vault" && pwd)"
+    printf 'Using configured vault: %s\n' "$vault_path"
+  else
+    vault_path="$(mktemp -d "${TMPDIR:-/tmp}/${vault_prefix}-XXXXXX")"
+    printf 'learning-os dev vault\n' > "$vault_path/.learning-os-dev"
+  fi
+
   for dir in "${dirs[@]}"; do
     mkdir -p "$vault_path/$dir"
   done
@@ -65,15 +79,17 @@ create_env() {
   for name in "${skills[@]}"; do
     source="$skills_root/$name"
     for dir in "${dirs[@]}"; do
-      cp -r "$source" "$vault_path/$dir/$name"
-      printf 'Copied: %s -> %s\n' "$vault_path/$dir/$name" "$source"
+      target="$vault_path/$dir/$name"
+      [[ -e "$target" || -L "$target" ]] && rm -rf "$target"
+      cp -r "$source" "$target"
+      printf 'Copied: %s -> %s\n' "$target" "$source"
     done
   done
 
   printf '\nDevelopment vault ready: %s\n' "$vault_path"
   if [[ -z "$agent" ]]; then
-    printf 'Claude Code: cd %q && claude       then run /learn-init <topic> or /learn-lesson <concept>\n' "$vault_path"
-    printf 'Codex:      cd %q && codex        then run $learn-init <topic> or $learn-lesson <concept>\n' "$vault_path"
+    printf 'Claude Code: cd %q && claude       then run /learn-init, /learn-lesson, or /learn-quiz\n' "$vault_path"
+    printf 'Codex:      cd %q && codex        then run $learn-init, $learn-lesson, or $learn-quiz\n' "$vault_path"
     printf 'Pi:         cd %q && pi --approve then run /skill:<name> <args>\n' "$vault_path"
   fi
 }
@@ -144,18 +160,10 @@ sync_skills() {
     exit 1
   fi
 
-  # Only operate on vaults this script owns: the /tmp/learning-os-* namespace
-  # or a vault carrying the dev marker written by --new-env.
-  if [[ "$vault" != "${TMPDIR:-/tmp}"/${vault_prefix}-* && \
-        ! -f "$vault/.learning-os-dev" ]]; then
-    printf 'Not a Learning OS dev vault (missing marker): %s\n' "$vault" >&2
-    exit 1
-  fi
-
   [[ -d "$vault/.claude/skills" ]] && dirs+=("$vault/.claude/skills")
   [[ -d "$vault/.agents/skills" ]] && dirs+=("$vault/.agents/skills")
   if (( ${#dirs[@]} == 0 )); then
-    printf 'Vault has no skill directories: %s\n' "$vault" >&2
+    printf 'Vault has no supported skill directories (.agents/skills or .claude/skills): %s\n' "$vault" >&2
     exit 1
   fi
 
@@ -166,16 +174,17 @@ sync_skills() {
   shopt -u nullglob
 
   for host_dir in "${dirs[@]}"; do
-    rm -rf "$host_dir"
     mkdir -p "$host_dir"
     for name in "${skills[@]}"; do
       source="$skills_root/$name"
+      target="$host_dir/$name"
+      [[ -e "$target" || -L "$target" ]] && rm -rf "$target"
       if [[ "$link" == true ]]; then
-        ln -s "$source" "$host_dir/$name"
-        printf 'Linked: %s -> %s\n' "$host_dir/$name" "$source"
+        ln -s "$source" "$target"
+        printf 'Linked: %s -> %s\n' "$target" "$source"
       else
-        cp -r "$source" "$host_dir/$name"
-        printf 'Copied: %s -> %s\n' "$host_dir/$name" "$source"
+        cp -r "$source" "$target"
+        printf 'Copied: %s -> %s\n' "$target" "$source"
       fi
     done
   done
@@ -324,8 +333,8 @@ if [[ "$link" == true && "$mode" != "sync-skills" ]]; then
   exit 2
 fi
 
-if [[ -n "$vault" && "$mode" != "sync-skills" ]]; then
-  printf '%s: --vault requires --sync-skills.\n' "${0##*/}" >&2
+if [[ -n "$vault" && "$mode" != "new-env" && "$mode" != "sync-skills" ]]; then
+  printf '%s: --vault requires --new-env or --sync-skills.\n' "${0##*/}" >&2
   exit 2
 fi
 
