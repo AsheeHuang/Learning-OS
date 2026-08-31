@@ -32,6 +32,7 @@ Before changing learning behavior or workspace formats, read `docs/learning-prot
 
 ## RULES
 
+- DO NOT OVER ENGINEERING, KEEP EVERYTHING SIMPLE
 - Keep agent responses concise. Use ASCII diagrams when they make architecture, workflow, state transitions, or trade-offs easier to understand.
 - Think before doing. Inspect the relevant files, distinguish settled decisions from open questions, and understand the intended outcome before editing or implementing.
 - Ask the user before acting when a material requirement, product decision, or destructive change is uncertain. Do not block progress with low-impact questions; choose the simplest option consistent with the existing protocol.
