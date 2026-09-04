@@ -26,9 +26,10 @@ Development helpers for Learning OS skills.
   --vault=<path>        Target vault for --new-env or --sync-skills. Without
                         it, --sync-skills uses the newest temporary vault under
                         ${TMPDIR:-/tmp}/learning-os-*.
-  --global              With --sync-skills, install into the user-level skill
-                        directories ~/.claude/skills and ~/.agents/skills
-                        instead of a dev vault.
+  --global              With --sync-skills, install into whichever user-level
+                        skill directories exist (~/.claude/skills,
+                        ~/.agents/skills, ~/.pi/agent/skills) instead of a
+                        dev vault.
   --link                With --sync-skills, replace the vault's copied
                         skills with symlinks to skills/ so edits are live;
                         repeat without --link to go back to copies.
@@ -157,8 +158,14 @@ sync_skills() {
   local -a skills=() dirs=()
 
   if [[ "$global" == true ]]; then
-    dirs=("$HOME/.claude/skills" "$HOME/.agents/skills")
-    target_label="$HOME/.claude/skills and $HOME/.agents/skills"
+    for host_dir in "$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.pi/agent/skills"; do
+      [[ -d "$host_dir" ]] && dirs+=("$host_dir")
+    done
+    if (( ${#dirs[@]} == 0 )); then
+      printf 'No user-level skill directories found (~/.claude/skills, ~/.agents/skills, ~/.pi/agent/skills).\n' >&2
+      exit 1
+    fi
+    target_label="${dirs[*]}"
   else
     resolve_vault
 
