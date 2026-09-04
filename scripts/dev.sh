@@ -10,7 +10,7 @@ vault_path=""
 vault=""
 
 usage() {
-  printf 'Usage: %s --new-env [--vault=<path>] [--agent=<pi|cc|codex>] | --sync-resources [--check] | --sync-skills [--vault=<path>] [--link] | --clean-env\n\n' "${0##*/}"
+  printf 'Usage: %s --new-env [--vault=<path>] [--agent=<pi|cc|codex>] | --sync-resources [--check] | --sync-skills [--vault=<path>|--global] [--link] | --clean-env\n\n' "${0##*/}"
   cat <<'EOF'
 Development helpers for Learning OS skills.
 
@@ -26,6 +26,9 @@ Development helpers for Learning OS skills.
   --vault=<path>        Target vault for --new-env or --sync-skills. Without
                         it, --sync-skills uses the newest temporary vault under
                         ${TMPDIR:-/tmp}/learning-os-*.
+  --global              With --sync-skills, install into the user-level skill
+                        directories ~/.claude/skills and ~/.agents/skills
+                        instead of a dev vault.
   --link                With --sync-skills, replace the vault's copied
                         skills with symlinks to skills/ so edits are live;
                         repeat without --link to go back to copies.
@@ -150,21 +153,27 @@ resolve_vault() {
 }
 
 sync_skills() {
-  local host_dir name source
+  local host_dir name source target_label
   local -a skills=() dirs=()
 
-  resolve_vault
+  if [[ "$global" == true ]]; then
+    dirs=("$HOME/.claude/skills" "$HOME/.agents/skills")
+    target_label="$HOME/.claude/skills and $HOME/.agents/skills"
+  else
+    resolve_vault
 
-  if [[ ! -d "$vault" ]]; then
-    printf 'Vault not found: %s\n' "$vault" >&2
-    exit 1
-  fi
+    if [[ ! -d "$vault" ]]; then
+      printf 'Vault not found: %s\n' "$vault" >&2
+      exit 1
+    fi
 
-  [[ -d "$vault/.claude/skills" ]] && dirs+=("$vault/.claude/skills")
-  [[ -d "$vault/.agents/skills" ]] && dirs+=("$vault/.agents/skills")
-  if (( ${#dirs[@]} == 0 )); then
-    printf 'Vault has no supported skill directories (.agents/skills or .claude/skills): %s\n' "$vault" >&2
-    exit 1
+    [[ -d "$vault/.claude/skills" ]] && dirs+=("$vault/.claude/skills")
+    [[ -d "$vault/.agents/skills" ]] && dirs+=("$vault/.agents/skills")
+    if (( ${#dirs[@]} == 0 )); then
+      printf 'Vault has no supported skill directories (.agents/skills or .claude/skills): %s\n' "$vault" >&2
+      exit 1
+    fi
+    target_label="$vault"
   fi
 
   shopt -s nullglob
@@ -189,7 +198,7 @@ sync_skills() {
     done
   done
 
-  printf '\nSkills synced into %s.\n' "$vault"
+  printf '\nSkills synced into %s.\n' "$target_label"
 }
 
 sync_resources() {
@@ -240,6 +249,7 @@ sync_resources() {
 mode=""
 check=false
 link=false
+global=false
 agent=""
 vault=""
 
@@ -271,6 +281,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --link)
       link=true
+      shift
+      ;;
+    --global)
+      global=true
       shift
       ;;
     --vault=*)
@@ -330,6 +344,16 @@ fi
 
 if [[ "$link" == true && "$mode" != "sync-skills" ]]; then
   printf '%s: --link requires --sync-skills.\n' "${0##*/}" >&2
+  exit 2
+fi
+
+if [[ "$global" == true && "$mode" != "sync-skills" ]]; then
+  printf '%s: --global requires --sync-skills.\n' "${0##*/}" >&2
+  exit 2
+fi
+
+if [[ "$global" == true && -n "$vault" ]]; then
+  printf '%s: --global and --vault are mutually exclusive.\n' "${0##*/}" >&2
   exit 2
 fi
 
