@@ -91,6 +91,11 @@ Write one file per concept at the target row's `Path` using the protocol heading
 
 The lesson must be mission-grounded, bounded to one objective, source-grounded or honestly unverified, and contain exactly three transfer-oriented questions with separate answers at the end. Tell the learner to attempt the questions before reading the answers. Include path-qualified links and citations. Use visual Markdown features when they reduce effort. Preserve human-written material and update only the lesson; `PROGRESS.md` owns status.
 
+Two constraints on how the explanation reads:
+
+- Explain in plain language people actually speak. Avoid abstract jargon when a concrete word says the same thing. Keep a technical term only when it is the concept being taught, and define it plainly on first use.
+- Use analogies. Anchor each new idea to something the learner already knows, then say where the analogy breaks down.
+
 ## 7. Present with diagrams, tables, and markdown features
 
 Use visual Markdown features when they reduce effort:
@@ -138,4 +143,4 @@ State the learning win, saved lesson paths, and `Needs Validation` status. Menti
 
 ## Completion check
 
-Finish only when every selected concept has a verified, bounded, source-grounded or honestly unverified lesson with exactly three separated-answer self-checks; state and history match; untouched and mid-write concepts retain their proper states; `Current Focus` is correct; and no topic is `Mastered`.
+Finish only when every selected concept has a verified, bounded, source-grounded or honestly unverified lesson written in plain language with at least one analogy and exactly three separated-answer self-checks; state and history match; untouched and mid-write concepts retain their proper states; `Current Focus` is correct; and no topic is `Mastered`.
